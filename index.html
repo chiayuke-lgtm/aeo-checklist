@@ -525,7 +525,7 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="v17";
+const BUILD="v18";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="aeo-checklist-v2";
@@ -1666,6 +1666,7 @@ const bakPick=document.getElementById("bakpick");
 const restoreForm=document.getElementById("restoreform");
 const restoreText=document.getElementById("restoretext");
 document.getElementById("restorebtn").addEventListener("click",()=>{
+  if(!IN_ARTIFACT()){bakPick.value="";bakPick.click();return}
   restoreForm.hidden=!restoreForm.hidden;
   if(!restoreForm.hidden){restoreText.value="";restoreText.focus()}
 });
