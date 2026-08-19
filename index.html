@@ -1,0 +1,1502 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AEO 優質企業審查清單</title><meta name="robots" content="noindex,nofollow"></head><body>
+<style id="appcss">
+:root{
+  --bg:#F7F7F4; --surface:#FFFFFF; --ink:#22303A; --muted:#5D6B74;
+  --line:#E3E5E0; --accent:#1F4E6B; --accent-ink:#FFFFFF; --accent-soft:#EAF1F5;
+  --seal:#A8402B; --seal-soft:#F9EDE9; --ok:#2F7A57; --ok-soft:#E8F2EC;
+  --chip:#EFF1EE;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12181D; --surface:#1A222A; --ink:#E6EBEE; --muted:#93A1AB;
+    --line:#2A343D; --accent:#7FB3D3; --accent-ink:#0F1A22; --accent-soft:#1E2E3A;
+    --seal:#E08A72; --seal-soft:#37231D; --ok:#6FBF97; --ok-soft:#1E3229;
+    --chip:#232D35;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12181D; --surface:#1A222A; --ink:#E6EBEE; --muted:#93A1AB;
+  --line:#2A343D; --accent:#7FB3D3; --accent-ink:#0F1A22; --accent-soft:#1E2E3A;
+  --seal:#E08A72; --seal-soft:#37231D; --ok:#6FBF97; --ok-soft:#1E3229;
+  --chip:#232D35;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  font-size:15px; line-height:1.65;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:28px 20px 80px}
+header.top{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
+.eyebrow{font-size:12px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase}
+h1{
+  font-family:"Songti TC","Noto Serif TC",serif; font-weight:700;
+  font-size:clamp(26px,4vw,36px); margin:6px 0 4px; text-wrap:balance;
+}
+.sub{color:var(--muted); font-size:13.5px; max-width:46em}
+.progress-line{display:flex; align-items:center; gap:12px; margin-top:14px}
+.bar{flex:1; height:8px; background:var(--chip); border-radius:4px; overflow:hidden}
+.bar>i{display:block; height:100%; width:0; background:var(--ok); transition:width .25s}
+.pct{font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); white-space:nowrap}
+.toolbar{
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  position:sticky; top:0; z-index:5; background:var(--bg);
+  padding:12px 0; border-bottom:1px solid var(--line); margin-bottom:20px;
+}
+.search{
+  flex:1; min-width:180px; display:flex; align-items:center; gap:8px;
+  background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:7px 12px;
+}
+.search input{
+  border:0; outline:0; background:transparent; color:var(--ink);
+  font:inherit; width:100%;
+}
+.search svg{flex:none; opacity:.5}
+.chips{display:flex; gap:6px}
+.chip{
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  border-radius:999px; padding:6px 14px; font-size:13px; cursor:pointer; font-family:inherit;
+}
+.chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.chip:focus-visible,.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.btn{
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  border-radius:6px; padding:6px 12px; font-size:13px; cursor:pointer; font-family:inherit;
+}
+.btn.danger{border-color:var(--seal); color:var(--seal); background:var(--seal-soft)}
+#toast{
+  position:fixed; left:50%; bottom:24px; transform:translate(-50%,12px);
+  max-width:min(88vw,480px); background:var(--ink); color:var(--bg);
+  font-size:13.5px; line-height:1.6; padding:12px 18px; border-radius:8px;
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:50;
+}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){ #toast{transition:none} }
+.layout{display:grid; grid-template-columns:216px 1fr; gap:32px; align-items:start}
+nav.side{position:sticky; top:64px}
+nav.side a{
+  display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+  text-decoration:none; color:var(--muted); font-size:13.5px;
+  padding:7px 10px; border-left:2px solid var(--line);
+}
+nav.side a:hover{color:var(--ink); background:var(--accent-soft)}
+nav.side a .n{font-variant-numeric:tabular-nums; font-size:12px}
+nav.side a.done{border-left-color:var(--ok)}
+nav.side a.done .n{color:var(--ok)}
+section.chapter{margin-bottom:44px; scroll-margin-top:70px}
+.ch-head{display:flex; align-items:baseline; gap:12px; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:4px}
+.ch-head h2{
+  font-family:"Songti TC","Noto Serif TC",serif; font-size:21px; margin:0; font-weight:700;
+}
+.ch-head .ch-num{
+  font-size:12px; letter-spacing:.14em; color:var(--accent); white-space:nowrap;
+  border:1px solid var(--accent); border-radius:3px; padding:2px 8px;
+}
+.ch-head .ch-pct{margin-left:auto; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+.sec{margin-top:22px}
+.sec h3{font-size:15.5px; margin:0 0 6px; font-weight:600}
+.sec h3 .code{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:6px}
+.sec .note{font-size:13px; color:var(--muted); margin:0 0 6px}
+ul.items{list-style:none; margin:0; padding:0}
+li.item{border-bottom:1px solid var(--line)}
+li.item:last-child{border-bottom:0}
+li.item.hide{display:none}
+label.row{display:flex; gap:12px; padding:10px 6px; cursor:pointer; align-items:flex-start}
+label.row:hover{background:var(--accent-soft)}
+.box{
+  flex:none; width:18px; height:18px; margin-top:3px;
+  border:1.5px solid var(--muted); border-radius:3px; background:var(--surface);
+  display:grid; place-items:center; color:transparent;
+}
+.item input{position:absolute; opacity:0; pointer-events:none}
+.item input:checked ~ .box, .item input:checked + .box{border-color:var(--ok); background:var(--ok); color:#fff}
+.item input:focus-visible ~ .box{outline:2px solid var(--accent); outline-offset:2px}
+.box svg{width:12px; height:12px}
+.itxt{flex:1}
+.item input:checked ~ .itxt .t{color:var(--muted)}
+.t b{font-weight:600}
+.pit{
+  display:block; font-size:13px; color:var(--seal); margin-top:2px;
+}
+.pit::before{content:"常見缺失"; font-size:11px; border:1px solid var(--seal); border-radius:3px; padding:0 5px; margin-right:7px; vertical-align:1px}
+.hot{
+  display:inline-block; font-size:11px; color:var(--seal); background:var(--seal-soft);
+  border-radius:3px; padding:1px 7px; margin-left:8px; vertical-align:2px; white-space:nowrap;
+}
+.notebtn{
+  flex:none; align-self:flex-start; margin-top:4px;
+  border:1px dashed var(--line); background:transparent; color:var(--muted);
+  border-radius:5px; font-size:11.5px; padding:2px 8px; cursor:pointer; font-family:inherit;
+  white-space:nowrap;
+}
+.notebtn:hover{color:var(--accent); border-color:var(--accent)}
+.notebtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.notewrap{margin:0 6px 0 48px}
+.note{
+  display:block; font-size:13px; color:var(--ink); background:var(--accent-soft);
+  border-left:3px solid var(--accent); padding:6px 10px; border-radius:0 6px 6px 0;
+  margin-bottom:10px; white-space:pre-wrap;
+}
+.note::before{
+  content:"筆記"; font-size:11px; color:var(--accent); border:1px solid var(--accent);
+  border-radius:3px; padding:0 5px; margin-right:7px;
+}
+.notearea{
+  width:100%; min-height:64px; font:inherit; font-size:13.5px; color:var(--ink);
+  background:var(--surface); border:1px solid var(--accent); border-radius:6px;
+  padding:8px 10px; margin-bottom:4px; resize:vertical; outline:0; box-sizing:border-box;
+}
+.noterow{margin-bottom:10px}
+.thumbs{display:flex; flex-wrap:wrap; gap:10px; margin:0 6px 0 48px}
+.thumbs:empty{display:none}
+.thumb{position:relative; margin-bottom:10px}
+.thumb img{max-height:110px; max-width:220px; display:block; border:1px solid var(--line); border-radius:6px}
+.thumb .imgdel{
+  position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%;
+  border:1px solid var(--seal); background:var(--surface); color:var(--seal);
+  font-size:12px; line-height:1; cursor:pointer; display:grid; place-items:center; padding:0;
+}
+.thumb .imgdel:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.empty{color:var(--muted); font-size:14px; padding:30px 6px; display:none}
+footer{margin-top:48px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--line); padding-top:14px}
+@media (max-width:820px){
+  .layout{grid-template-columns:1fr}
+  nav.side{position:static; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+  nav.side a{border:1px solid var(--line); border-radius:999px; padding:4px 12px}
+}
+.sec.hide,section.chapter.hide{display:none}
+.profilebar{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:14px 0 0; font-size:13.5px;
+}
+.profilebar .plabel{color:var(--muted); letter-spacing:.08em; font-size:12px}
+.profilebar select{
+  font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:6px; padding:6px 10px;
+  flex:1 1 12em; min-width:10em; max-width:24em;
+}
+.profilebar .pmeta{color:var(--muted); font-size:12.5px; margin-left:auto; font-variant-numeric:tabular-nums}
+.nameform{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 0 0}
+.nameform[hidden]{display:none}
+.nameform input{
+  font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--accent); border-radius:6px; padding:6px 10px; width:13em; outline:0;
+}
+.nameform input.err{border-color:var(--seal)}
+.nameform .nameerr{color:var(--seal); font-size:12.5px}
+.printmeta{display:none}
+#totop{
+  position:fixed; right:20px; bottom:24px; width:42px; height:42px;
+  border-radius:50%; border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  cursor:pointer; display:grid; place-items:center; z-index:40;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+#totop.show{opacity:1; pointer-events:auto}
+#totop:hover{color:var(--accent); border-color:var(--accent)}
+#totop:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+#totop svg{width:18px; height:18px}
+@media (prefers-reduced-motion: reduce){ #totop{transition:none} }
+@page{size:A4; margin:12mm}
+html.pmode .toolbar,html.pmode nav.side,html.pmode .profilebar,html.pmode .nameform,
+html.pmode .cloudline,html.pmode .addrow,html.pmode #totop,html.pmode .notebtn,
+html.pmode .notearea,html.pmode .noterow,html.pmode .thumb .imgdel,html.pmode #toast{display:none}
+html.pmode body{background:#fff; color:#000}
+html.pmode .layout,html.pmode main{display:block}
+html.pmode .wrap{display:block; width:186mm; max-width:186mm; margin:0; padding:0}
+html.pmode .printmeta{display:block; font-size:12.5px; margin-top:8px}
+html.pmode .note{background:transparent}
+html.pmode .thumbs{display:block}
+html.pmode .thumb{display:block; margin:0 0 8px}
+html.pmode .thumb img{max-height:200px; max-width:320px}
+html.pmode label.row{display:block; position:relative; padding:10px 6px 10px 34px}
+html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
+@media print{
+  .toolbar,nav.side,.profilebar,.nameform,.cloudline,.addrow,#totop,.notebtn,.notearea,.noterow,.thumb .imgdel,#toast{display:none}
+  body{background:#fff; color:#000}
+  .layout,main{display:block}
+  .wrap{display:block; width:186mm; max-width:186mm; margin:0; padding:0}
+  .printmeta{display:block; font-size:12.5px; margin-top:8px}
+  .note{background:transparent}
+  .thumbs{display:block}
+  .thumb{display:block; margin:0 0 8px; break-inside:avoid; page-break-inside:avoid}
+  .thumb img{max-height:200px; max-width:320px}
+  label.row{
+    display:block; position:relative; padding:10px 6px 10px 34px;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+  .box{position:absolute; left:6px; top:13px; margin-top:0}
+  .note,.notewrap{break-inside:avoid; page-break-inside:avoid}
+  .sec h3{break-after:avoid; page-break-after:avoid}
+  .ch-head{break-after:avoid; page-break-after:avoid}
+  .pb{break-before:page; page-break-before:always}
+}
+@media (prefers-reduced-motion: reduce){ .bar>i{transition:none} }
+.cloudline{font-size:12.5px; color:var(--muted); margin:-12px 0 16px}
+.cloudline.dirty{color:var(--seal)}
+.btn:disabled{opacity:.5; cursor:default}
+.addrow{margin:6px 6px 0 48px; display:flex; gap:8px; align-items:center}
+.custominput{
+  flex:1; min-width:0; font:inherit; font-size:13.5px; color:var(--ink);
+  background:var(--surface); border:1px solid var(--accent); border-radius:6px;
+  padding:6px 10px; outline:0;
+}
+.cbadge{
+  display:inline-block; font-size:11px; color:var(--accent); border:1px solid var(--accent);
+  border-radius:3px; padding:0 5px; margin-left:8px; vertical-align:2px; white-space:nowrap;
+}
+.notebtn.armed{color:var(--seal); border-color:var(--seal); background:var(--seal-soft)}
+#pdfov{position:fixed; inset:0; z-index:100; background:rgba(15,20,25,.97); overflow:auto; -webkit-overflow-scrolling:touch}
+.pdfov-bar{
+  position:sticky; top:0; z-index:2; display:flex; gap:12px; align-items:center; justify-content:space-between;
+  padding:10px 14px; background:#0F1419; color:#E6EBEE; font-size:13px; line-height:1.5;
+}
+.pdfov-pages{display:flex; flex-direction:column; align-items:center; gap:14px; padding:16px}
+.pdfov-pages img{width:min(94vw,700px); background:#fff; box-shadow:0 2px 14px rgba(0,0,0,.4)}
+</style>
+
+<div hidden></div>
+<template id="shell">
+<div class="wrap">
+<header class="top">
+  <h1>優質企業審查清單</h1>
+  <div class="progress-line">
+    <div class="bar"><i id="totalbar"></i></div>
+    <span class="pct" id="totalpct">0 / 0</span>
+  </div>
+  <div class="printmeta" id="printmeta"></div>
+</header>
+
+<div class="profilebar">
+  <span class="plabel">審查對象</span>
+  <select id="profile" aria-label="切換審查對象"></select>
+  <button class="btn" id="addprof">＋新增</button>
+  <button class="btn" id="renameprof">重新命名</button>
+  <button class="btn" id="delprof">刪除</button>
+  <span class="pmeta" id="pmeta"></span>
+</div>
+<div class="nameform" id="nameform" hidden>
+  <input id="nameinput" type="text" placeholder="對象名稱" maxlength="40" aria-label="對象名稱">
+  <button class="btn" id="nameok">確定</button>
+  <button class="btn" id="namecancel">取消</button>
+  <span class="nameerr" id="nameerr" role="alert"></span>
+</div>
+
+<div class="toolbar">
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="搜尋項次或關鍵字，如 3.6、識別證…" aria-label="搜尋檢核項目">
+  </div>
+  <div class="chips" role="group" aria-label="篩選">
+    <button class="chip" data-f="all" aria-pressed="true">全部</button>
+    <button class="chip" data-f="todo" aria-pressed="false">未完成</button>
+    <button class="chip" data-f="hot" aria-pressed="false">高頻缺失</button>
+  </div>
+  <button class="btn" id="copybtn">複製全文</button>
+  <button class="btn" id="pdfbtn">輸出 PDF</button>
+  <button class="btn" id="printbtn">列印</button>
+  <button class="btn" id="resetbtn">重設勾選</button>
+  <button class="btn" id="cloudbtn">☁️ 儲存雲端</button>
+  <button class="btn" id="bakbtn">匯出備份</button>
+  <button class="btn" id="restorebtn">還原備份</button>
+</div>
+<div class="cloudline" id="cloudline"></div>
+<div class="nameform" id="restoreform" hidden>
+  <textarea id="restoretext" class="notearea" style="min-height:80px" placeholder="把先前匯出的備份內容貼到這裡（或按「選擇備份檔」）" aria-label="備份內容"></textarea>
+  <button class="btn" id="restorefile">選擇備份檔</button>
+  <button class="btn" id="restoreok">確定還原</button>
+  <button class="btn" id="restorecancel">取消</button>
+</div>
+<input type="file" id="imgpick" accept="image/*" multiple hidden>
+<input type="file" id="bakpick" accept=".json,application/json,text/plain" hidden>
+
+<div class="layout">
+  <nav class="side" id="sidenav" aria-label="章節"></nav>
+  <main id="main">
+    <p class="empty" id="empty">沒有符合條件的項目。</p>
+  </main>
+</div>
+
+</div>
+
+<button id="totop" aria-label="回到最上方" title="回到最上方">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5.5 11.5 6.5-6.5 6.5 6.5"/></svg>
+</button>
+</template>
+
+<script type="application/json" id="cloudstate">null</script>
+<script id="app">
+(function(){const t=document.getElementById("shell");t.parentNode.insertBefore(t.content.cloneNode(true),t)})();
+const DATA=[
+{id:"1",badge:"第一章",title:"管理組織",sections:[
+ {code:"1.1",title:"成立供應鏈安全管理組織",items:[
+  {t:"組織圖列出高層之<b>職稱及姓名</b>（主任委員、管理代表、執行秘書）",p:"只有職稱沒有姓名、管理代表未標示"},
+  {t:"組織成員在各文件間一致：組織圖、人事佈達令／內部公告、安全管理手冊",p:"公告成員與組織圖不一致"},
+  {t:"安全管理手冊含管理組織章節",p:null},
+  {t:"起始會議：會議紀錄、現場照片、簽到表齊備，日期正確",p:"缺簽到表、紀錄日期與自評表不符"},
+  {t:"不需放置 AEO 證書本身作為佐證",p:null},
+ ]},
+ {code:"1.2",title:"高層管理人之監督（管理審查會議）",items:[
+  {t:"定期審查會議之召開時間與程序書規定相符",p:"程序書訂 1 月召開、實際 3 月"},
+  {t:"會議通知、會議紀錄日期與自評表敘述一致",p:null},
+ ]},
+ {code:"1.3",title:"稽核單位與內／外部稽核",items:[
+  {t:"內部稽核查檢表已附",p:null},
+  {t:"外部稽核查檢表已附，稽核對象與佐證照片相符",p:"標題與照片對象是不同公司"},
+  {t:"商業夥伴查檢表／商業夥伴安全管理（評估）辦法已附",p:null},
+  {t:"本年度內外稽已執行；未執行者有年度稽核計畫表",p:"已屆第三季仍未辦理、也無計畫表"},
+  {t:"稽核文件為最新年度，日期無誤繕",p:null},
+  {t:"訓練相關佐證為近年度資料",p:null},
+ ]},
+ {code:"1.4",title:"供應鏈安全法規之瞭解與宣導（教育訓練）",items:[
+  {t:"自評表標題年份正確",p:"年度寫錯未更新"},
+  {t:"起始會議／年度訓練佐證含簽到表",p:null},
+ ]}]},
+{id:"2",badge:"第二章",title:"諮商、合作與聯繫",sections:[
+ {code:"2.1",title:"配置供應鏈安全專責人員",items:[
+  {t:"指定<b>二名以上</b>經海關（或其委辦機構）供應鏈安全訓練合格之員工",p:null},
+  {t:"自評表提及之每一位人員均附合格證書",p:"提 4 名只附 2 張、證書畫面空白、證書人員與敘述不符"},
+ ]},
+ {code:"2.2",title:"指定關務聯絡與諮商窗口",items:[
+  {t:"聯絡窗口<b>至少一名</b>具供應鏈安全專責人員證書",p:"窗口皆無證書"},
+  {t:"窗口聯絡資訊（電話、分機）與佐證一致",p:null},
+ ]}]},
+{id:"3",badge:"第三章",title:"實體與場所安全",sections:[
+ {code:"3.1.1",title:"建築物之安全（建材、產權與使用權）",items:[
+  {t:"每一廠區／辦公室均有權狀、使用執照或租賃契約",p:null},
+  {t:"使用執照起造人非本公司時，另附產權證明或使用／租賃合約",p:"起造人為關係企業或前手，無後續合約"},
+  {t:"租賃契約之出租人、地址與使用執照及其他佐證一致",p:null},
+  {t:"各廠建物外觀照片已附，佐證清晰可辨",p:null},
+ ]},
+ {code:"3.1.2",title:"建築物結構之定期檢查維修（含公安、消防申報）",items:[
+  {t:"建築物公共安全（防火避難設施與設備）檢查申報結果通知書：<b>每兩年一次</b>，為最新一期",p:"逾期未更新、僅以自我檢查代替"},
+  {t:"消防安全設備檢查：<b>每年一次</b>，佐證放<b>受理單</b>（及申報結果通知書）",p:"未放受理單、放到檢修報告書",hot:true},
+  {t:"<b>每一廠區／辦公室</b>之申報均齊備且未逾期",p:"漏總公司、分公司或個別廠區"},
+  {t:"電梯（升降梯）使用許可證在效期內；維護保養頻率已說明",p:null},
+  {t:"以自我檢查代替申報者：附檢查表，異常有維修紀錄",p:null},
+  {t:"程序書規定之特殊檢查（如颱風後巡檢）有執行紀錄可抽核",p:null},
+  {t:"定期巡檢紀錄表齊備（含各廠區、物流中心）",p:null},
+  {t:"異常狀況之通報／申請維修流程已敘明，且有通報或維修紀錄",p:null},
+  {t:"檢查頻率：自評表敘述、程序書、檢查紀錄表三者一致",p:"自評寫每日、紀錄表為每週"},
+ ]},
+ {code:"3.2",title:"適當之隔離物",items:[
+  {t:"貨物處理區及儲存設施之外圍以適當隔離物圍住；<b>無貨物處理區者</b>敘明現況，並要求商業夥伴辦理（附商業夥伴聲明書或其 AEO 證書）",p:null},
+  {t:"以隔離物區分原物料、成品及危險物品",p:null},
+  {t:"所有隔離物定期檢查及維修並作成紀錄",p:null},
+ ]},
+ {code:"3.3",title:"管制區域之劃分",items:[
+  {t:"平面圖區分一般區與管制區",p:null},
+  {t:"自評表明確定義管制區範圍（含資訊室／機房是否納入）及實際管控方式",p:null},
+ ]},
+ {code:"3.4",title:"鎖鑰管理",items:[
+  {t:"鑰匙管理辦法內容確實與鑰匙管控相關",p:"引用之程序書條文與鑰匙無關"},
+  {t:"鑰匙清冊建立，<b>每年盤點</b>且有最新年度盤點紀錄",p:null},
+  {t:"鑰匙借用登記表為最新年度；長期無人借用時說明現行作業方式",p:null},
+  {t:"鑰匙保管箱照片（含內部）已附",p:null},
+  {t:"借用期間合理（長期借用應說明或改為定期借還）",p:null},
+  {t:"保管切結書名稱、標題正確",p:null},
+ ]},
+ {code:"3.5",title:"照明設備",items:[
+  {t:"各場所（含每一辦公室）照明照片齊備、清晰",p:null},
+  {t:"照片與前後章節之場景一致",p:"照明照片與大門照片場景對不上"},
+  {t:"照明佐證涵蓋<b>一般照明、緊急照明</b>，及夜間照明（如有夜班）",p:null},
+ ]},
+ {code:"3.6",title:"防盜或監視系統（CCTV）",items:[
+  {t:"影像保存<b>至少 30 天</b>，自評表已載明",p:"僅寫 15 日",hot:true},
+  {t:"CCTV 定期檢查且有檢查紀錄；頻率與自評表一致",p:null},
+  {t:"CCTV 配置圖已附",p:null},
+  {t:"監視設備（保全系統）契約已附，含期限與簽署頁",p:null},
+ ]},
+ {code:"3.7",title:"保全人員之配置",items:[
+  {t:"保全合約在效期內",p:"逾期未換約",hot:true},
+  {t:"合約佐證含<b>合約期間頁</b>及<b>雙方簽署頁</b>",p:"只放封面"},
+  {t:"無期限之合約：確認有自動續約機制",p:null},
+  {t:"合約涵蓋範圍包含所有廠區／物流中心／分公司",p:null},
+  {t:"承租大樓者：附大樓保全聘任合約及保全工作日誌",p:null},
+  {t:"保全公司名稱與現況一致（已更換須更新自評表）",p:null},
+  {t:"保全日誌佐證確為工作日誌",p:"放成其他文件"},
+ ]}]},
+{id:"4",badge:"第四章",title:"出入管控",sections:[
+ {code:"4.1.1",title:"出入大門之車輛與人員管控",items:[
+  {t:"訪客登記簿（或系統）有佐證照片／畫面",p:null},
+  {t:"登記欄位確實填寫：離去時間、受訪人簽章、訪客證編號",p:"欄位長期空白"},
+  {t:"車輛進出登記或檢查有紀錄、有照片",p:null},
+  {t:"換證方式（識別證／貼紙／回條）與自評表敘述一致，紙本改 E 化須同步更新",p:null},
+  {t:"訪客停車需求：臨時停車證及登記紀錄",p:null},
+ ]},
+ {code:"4.1.2",title:"門哨配置",items:[
+  {t:"自評表說明公司共有幾處出入口",p:null},
+  {t:"各出入口／門哨照片齊備",p:null},
+  {t:"門哨保全配置與現況相符（停業廠區、新增廠區均更新）",p:null},
+ ]},
+ {code:"4.2.1.1",title:"員工身分識別制度（識別證）",items:[
+  {t:"員工識別證照片已附；上班時間須配戴",p:null},
+  {t:"識別證制度有程序書依據，且自評表引用之文件正確",p:null},
+  {t:"<b>忘帶／遺失／新進人員之身分辨識機制</b>：臨時識別證（備用卡）制度、證件照片、借用／核發紀錄",p:null,hot:true},
+  {t:"臨時通行門禁卡之適用情形已說明",p:null},
+  {t:"以制服辨識者：照片與規定相符",p:null},
+ ]},
+ {code:"4.2.1.2",title:"依許可範圍進入工作區域（機房、檔案室等重點管制區）",items:[
+  {t:"自評表<b>定義重點管制區</b>（機房、檔案室等）及其管控措施",p:null,hot:true},
+  {t:"重點管制區門禁照片（或 CCTV 監視畫面）已附",p:null},
+  {t:"進出登記表或系統進出紀錄已附",p:null},
+  {t:"非授權人員（訪客、保養廠商）進入規範及陪同機制已敘明",p:null},
+  {t:"權限申請流程（紙本或 E 化畫面）有佐證",p:null},
+  {t:"管制區進出登記表：表頭標明區域、獨立列項、欄位意義明確",p:"多區共用一張表、簽名欄不知是誰簽"},
+  {t:"通行許可證：使用範圍及歸還制度已敘明",p:null},
+  {t:"門禁卡進出與紙本登記併行時，規則交代清楚（誰刷卡、誰須簽名）",p:null},
+  {t:"檔案室有調閱紀錄；近年皆無紀錄時說明原因",p:null},
+ ]},
+ {code:"4.2.1.3",title:"進出裝置之核發、收回及更換",items:[
+  {t:"程序書內容確實涵蓋核發與收回",p:"引用之辦法與核發收回無關"},
+  {t:"核發、收回、更換紀錄已附",p:null},
+  {t:"佐證標題、引用條文正確",p:null},
+ ]},
+ {code:"4.2.2.1",title:"訪客身分證明與登記",items:[
+  {t:"訪客證／來賓證照片已附，名稱前後統一",p:"訪客證、來賓證混用"},
+  {t:"訪客、廠商、承攬商識別證是否區分，已說明",p:null},
+  {t:"登記表單用途明確",p:"面試者登記在員工出入登記簿"},
+ ]},
+ {code:"4.2.2.2",title:"訪客陪同與識別證配戴",items:[
+  {t:"員工陪同訪客（訪客配戴證件）之照片已附",p:"照片中訪客未配戴訪客證"},
+ ]},
+ {code:"4.2.2.3",title:"交貨（送貨）人員管控",items:[
+  {t:"送貨／交貨人員：身分確認機制、車輛檢查、全程陪同之規範與照片",p:null},
+  {t:"交貨人員歸類正確（廠商或送貨人員），相關程序書已附",p:null},
+ ]},
+ {code:"4.3",title:"收件檢查機制（郵件與包裹）",items:[
+  {t:"收發郵件包裹之教育訓練：課程講義＋簽到表",p:"只有簽到無講義",hot:true},
+  {t:"簽到人數與應到人數一致，不符須說明",p:null},
+  {t:"郵件／包裹登記表：檢查結果欄確實勾選",p:null},
+  {t:"佐證確為郵件收發登記表；自評引用之規定名稱正確",p:null},
+ ]},
+ {code:"4.4",title:"車輛停放管理",items:[
+  {t:"停車場照片（或 CCTV 監視畫面）已附",p:null},
+  {t:"停車證制度：員工／來賓停車證照片；自評與佐證所指證件相符",p:"自評寫來賓停車證、照片是員工停車證"},
+  {t:"員工與訪客車位有無區分，已說明",p:null},
+  {t:"停車場相關規範及平面圖已附",p:null},
+ ]},
+ {code:"4.5",title:"可疑人士之通報",items:[
+  {t:"緊急事故通報<b>流程圖</b>已附",p:null},
+  {t:"通報<b>電話表／緊急通訊錄</b>已附",p:null,hot:true},
+  {t:"曾發生事故者有通報紀錄",p:null},
+  {t:"佐證與自評表標題一致",p:"標題員工進出登記表、佐證放訪客登記表"},
+ ]},
+ {code:"4.6",title:"盤查及驅離未經許可人員之程序",items:[
+  {t:"訂有辨識、盤查及驅離未經許可或身分不明人員之程序，引用條文正確",p:null},
+  {t:"相關訓練（識別內部陰謀、防止可疑人物侵入）內容及應變辦法截圖已附",p:null},
+ ]}]},
+{id:"5",badge:"第五章",title:"員工安全",sections:[
+ {code:"5.1",title:"備有員工名單（人事資料）",items:[
+  {t:"自評表標題與系統畫面名稱一致",p:null},
+  {t:"各節引用之「人事管理辦法」相關頁面截圖已附",p:null},
+ ]},
+ {code:"5.2",title:"雇用員工前履歷之查核",items:[
+  {t:"面試評估（面談）紀錄已附",p:"無任何面試紀錄；面談紀錄誤放 5.3"},
+  {t:"工作規則相關章節條文截圖已附",p:null},
+  {t:"自評表引用之辦法章節正確",p:null},
+ ]},
+ {code:"5.3",title:"雇用員工之背景調查（敏感性員工）",items:[
+  {t:"自評表<b>定義敏感性員工職位</b>",p:null},
+  {t:"任用前之背景調查／考評措施已敘明",p:null},
+  {t:"切結書（員工信用調查同意書／保密協議書）已簽署，且簽署日<b>在任用前</b>",p:"到職數月後才補簽",hot:true},
+  {t:"文件更名（如保證書→保密合約書）後，自評表與佐證同步更新",p:null},
+  {t:"佐證編號齊全無遺漏",p:null},
+ ]},
+ {code:"5.4",title:"現職員工之定期調查（考核）",items:[
+  {t:"敏感性員工（或全員）有<b>年度定期考核機制</b>，自評表已敘明",p:null},
+  {t:"考核表／考評表佐證已附，為最新年度",p:null,hot:true},
+ ]},
+ {code:"5.5",title:"離職或調職員工權限之移除或變更",items:[
+  {t:"離職／退休／留職停薪人員之<b>帳號停用或權限移除畫面</b>",p:null,hot:true},
+  {t:"離職通知單／申請書、人員異動申請單已附（佐證資訊部門已移除權限）",p:null},
+  {t:"電腦作業密碼移交單已附",p:null},
+  {t:"交接清單勾選確實",p:null},
+  {t:"權限移除之生效日、填表日、批核日邏輯一致",p:null},
+  {t:"佐證文件年份正確",p:null},
+ ]}]},
+];
+
+const BUILD="v16";
+const KEY="aeo-checklist-v2";
+const DIRTYKEY="aeo-cloud-dirty";
+let db=null, cloudSavedAt=null, cloudRO=false, cloudBusy=false, booting=true;
+function readCloud(){
+  try{
+    const el=document.getElementById("cloudstate");
+    if(!el)return null;
+    const c=JSON.parse(el.textContent);
+    return c&&c.db&&c.db.profiles?c:null;
+  }catch(e){return null}
+}
+// v2 對齊自評表章節後的舊勾選位置搬移（舊 id → 新 id）
+const REMAP={
+ "3.2.0":"3.1.6","3.2.1":"3.1.7","3.2.2":"3.1.8",
+ "4.5.2":"4.6.0","4.5.3":"4.7.0","4.5.4":"4.7.1","4.5.5":"4.5.2",
+ "4.6.0":"4.8.0","4.6.1":"4.8.1","4.6.2":"4.8.2","4.6.3":"4.8.3",
+ "4.7.0":"4.9.0","4.7.1":"4.9.1","4.7.2":"4.9.2","4.7.3":"4.9.3",
+ "4.8.0":"4.10.0","4.8.1":"4.10.1","4.8.2":"4.10.2","4.8.4":"4.10.3","4.8.3":"4.11.0",
+};
+// v3：3.3 後四條移至 4.2.1.2
+const REMAP3={"3.3.2":"4.3.5","3.3.3":"4.3.6","3.3.4":"4.3.7","3.3.5":"4.3.8"};
+function migrateProfile(p){
+  if(p.v>=3)return;
+  const mv=(o,M)=>{const n={};Object.entries(o||{}).forEach(([k,val])=>{n[M[k]||k]=val});return n};
+  if(!(p.v>=2)){
+    p.state=mv(p.state,REMAP); p.notes=mv(p.notes,REMAP); p.imgs=mv(p.imgs,REMAP);
+  }
+  p.state=mv(p.state,REMAP3); p.notes=mv(p.notes,REMAP3); p.imgs=mv(p.imgs,REMAP3);
+  p.v=3;
+}
+function mergeCloud(payload){
+  Object.entries(payload.db.profiles).forEach(([id,p])=>{
+    const lp=db.profiles[id];
+    if(!lp||(p.updated||0)>(lp.updated||0))db.profiles[id]=p;
+  });
+  if(!db.profiles[db.current]){
+    db.current=db.profiles[payload.db.current]?payload.db.current:Object.keys(db.profiles)[0];
+  }
+  Object.entries(payload.images||{}).forEach(([k,d])=>{if(!imgGet(k))imgPut(k,d)});
+  if(payload.db.custom){
+    if(!db.custom)db.custom={};
+    Object.entries(payload.db.custom).forEach(([code,items])=>{
+      const loc=db.custom[code]||(db.custom[code]=[]);
+      items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
+    });
+  }
+}
+function loadDb(){
+  let hadLocal=true;
+  try{db=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){db=null}
+  if(!db||typeof db!=="object"||!db.profiles||!Object.keys(db.profiles).length){
+    let old=null;
+    try{old=JSON.parse(localStorage.getItem("aeo-checklist-v1")||"null")}catch(e){}
+    const migrated=old&&typeof old==="object"&&Object.keys(old).length>0;
+    hadLocal=!!migrated;
+    const id="p"+Date.now().toString(36);
+    db={current:id,profiles:{[id]:{name:"預設對象",state:migrated?old:{},updated:migrated?Date.now():null}}};
+  }
+  const cloud=readCloud();
+  if(cloud){
+    cloudSavedAt=cloud.saved||null;
+    if(!hadLocal){
+      db=cloud.db;
+      Object.entries(cloud.images||{}).forEach(([k,d])=>{if(!imgGet(k))imgPut(k,d)});
+    }else{
+      mergeCloud(cloud);
+    }
+  }
+  if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
+  if(!db.custom)db.custom={};
+  Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
+  save();
+}
+const cur=()=>db.profiles[db.current];
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+let idb=null;
+const idbReady=new Promise(res=>{
+  try{
+    const rq=indexedDB.open("aeo-imgs",1);
+    rq.onupgradeneeded=()=>rq.result.createObjectStore("imgs");
+    rq.onsuccess=()=>{idb=rq.result;res(true)};
+    rq.onerror=()=>res(false);
+  }catch(e){res(false)}
+});
+const idbGet=k=>idbReady.then(ok=>ok?new Promise(res=>{
+  const r=idb.transaction("imgs").objectStore("imgs").get(k);
+  r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);
+}):null);
+const idbDel=k=>idbReady.then(ok=>ok&&new Promise(res=>{
+  const t=idb.transaction("imgs","readwrite");
+  t.objectStore("imgs").delete(k);
+  t.oncomplete=()=>res(true); t.onerror=()=>res(false);
+}));
+
+const IMGPRE="aeoimg.";
+const imgGet=k=>{try{return localStorage.getItem(IMGPRE+k)}catch(e){return null}};
+const imgPut=(k,d)=>{try{localStorage.setItem(IMGPRE+k,d);return true}catch(e){return false}};
+const imgDrop=k=>{try{localStorage.removeItem(IMGPRE+k)}catch(e){} idbDel(k)};
+
+const blobToDataURL=blob=>new Promise(res=>{
+  const fr=new FileReader();
+  fr.onload=()=>res(fr.result); fr.onerror=()=>res(null);
+  fr.readAsDataURL(blob);
+});
+async function compressToDataURL(file){
+  try{
+    const url=URL.createObjectURL(file);
+    const img=await new Promise((res,rej)=>{
+      const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url;
+    });
+    const draw=(max,q)=>{
+      let w=img.naturalWidth,h=img.naturalHeight;
+      if(Math.max(w,h)>max){const r=max/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}
+      const c=document.createElement("canvas"); c.width=w; c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      return c.toDataURL("image/jpeg",q);
+    };
+    let d=draw(1200,0.78);
+    if(d.length>500000)d=draw(900,0.6);
+    URL.revokeObjectURL(url);
+    return d;
+  }catch(e){return await blobToDataURL(file)}
+}
+const save=()=>{
+  try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}
+  if(!booting){
+    try{localStorage.setItem(DIRTYKEY,"1")}catch(e){}
+    updateCloudUI();
+  }
+};
+const fmt=ts=>new Date(ts).toLocaleString("zh-TW",{year:"numeric",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+loadDb();
+
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>';
+const main=document.getElementById("main");
+const nav=document.getElementById("sidenav");
+let filter="all", query="";
+
+function makeItem(it,id,secText,custom){
+  const li=document.createElement("li");
+  li.className="item"+(custom?" custom":""); li.dataset.id=id;
+  li.dataset.hot=it.hot?"1":"0";
+  li.dataset.text=(secText+" "+it.t+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${it.t}</span>${custom?'<span class="cbadge">自訂</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 筆記</button><button class="notebtn imgbtn" type="button">🖼 附圖</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
+  li.querySelector("input").addEventListener("change",e=>{
+    if(e.target.checked)cur().state[id]=true; else delete cur().state[id];
+    cur().updated=Date.now();
+    save(); refresh(); renderProfiles();
+  });
+  li.querySelector(".notebtn").addEventListener("click",e=>{
+    e.preventDefault(); e.stopPropagation();
+    const wrap=li.querySelector(".notewrap");
+    wrap.dataset.editing=wrap.dataset.editing==="1"?"":"1";
+    renderNote(li);
+  });
+  li.querySelector(".imgbtn").addEventListener("click",e=>{
+    e.preventDefault(); e.stopPropagation();
+    pendingLi=li; imgPick.value=""; imgPick.click();
+  });
+  if(custom){
+    const del=li.querySelector(".customdel");
+    let timer=null;
+    del.addEventListener("click",e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(del.dataset.armed){
+        clearTimeout(timer);
+        removeCustomItem(id);
+      }else{
+        del.dataset.armed="1"; del.textContent="確定刪除？"; del.classList.add("armed");
+        timer=setTimeout(()=>{
+          delete del.dataset.armed; del.textContent="－ 刪除"; del.classList.remove("armed");
+        },4000);
+      }
+    });
+  }
+  return li;
+}
+function removeCustomItem(id){
+  Object.keys(db.custom||{}).forEach(code=>{
+    db.custom[code]=(db.custom[code]||[]).filter(x=>x.id!==id);
+    if(!db.custom[code].length)delete db.custom[code];
+  });
+  Object.values(db.profiles).forEach(p=>{
+    if(p.state)delete p.state[id];
+    if(p.notes)delete p.notes[id];
+    if(p.imgs&&p.imgs[id]){p.imgs[id].forEach(k=>imgDrop(k));delete p.imgs[id]}
+  });
+  save(); renderCustom(); applyState(); refresh();
+}
+function renderCustom(){
+  document.querySelectorAll("ul.items[data-custom]").forEach(ul=>{
+    ul.querySelectorAll("li.custom").forEach(li=>li.remove());
+    (((db.custom||{})[ul.dataset.custom])||[]).forEach(x=>{
+      ul.appendChild(makeItem({t:esc(x.t),p:null},x.id,ul.dataset.sectext||"",true));
+    });
+  });
+}
+function build(){
+  const frag=document.createDocumentFragment();
+  DATA.forEach(ch=>{
+    const sec=document.createElement("section");
+    sec.className="chapter"; sec.id="ch-"+ch.id;
+    let h=`<div class="ch-head"><span class="ch-num">${ch.badge}</span><h2>${ch.title}</h2><span class="ch-pct" data-chpct="${ch.id}"></span></div>`;
+    if(ch.note)h+=`<p class="note" style="font-size:13px;color:var(--muted);margin:6px 0 0">${ch.note}</p>`;
+    sec.innerHTML=h;
+    ch.sections.forEach((s,si)=>{
+      const div=document.createElement("div"); div.className="sec";
+      if(s.title)div.innerHTML=`<h3>${s.code?`<span class="code">${s.code}</span>`:""}${s.title}</h3>`;
+      const ul=document.createElement("ul"); ul.className="items";
+      const secText=s.code+" "+s.title;
+      ul.dataset.custom=s.code; ul.dataset.sectext=secText;
+      s.items.forEach((it,ii)=>{
+        ul.appendChild(makeItem(it,`${ch.id}.${si}.${ii}`,secText,false));
+      });
+      const addrow=document.createElement("div"); addrow.className="addrow";
+      const closeAdd=()=>{
+        addrow.innerHTML=`<button class="notebtn addcustom" type="button">＋ 自訂項目</button>`;
+        addrow.querySelector(".addcustom").addEventListener("click",openAdd);
+      };
+      const openAdd=()=>{
+        addrow.innerHTML=`<input class="custominput" type="text" maxlength="200" placeholder="輸入自訂檢核項目內容…" aria-label="自訂檢核項目"><button class="btn addok" type="button">確定</button><button class="btn addcancel" type="button">取消</button>`;
+        const inp=addrow.querySelector("input"); inp.focus();
+        const commit=()=>{
+          const v=inp.value.trim();
+          if(!v){closeAdd();return}
+          if(!db.custom)db.custom={};
+          const cid="c"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);
+          (db.custom[s.code]||(db.custom[s.code]=[])).push({id:cid,t:v});
+          save(); closeAdd(); renderCustom(); applyState(); refresh();
+        };
+        addrow.querySelector(".addok").addEventListener("click",commit);
+        addrow.querySelector(".addcancel").addEventListener("click",closeAdd);
+        inp.addEventListener("keydown",e=>{
+          if(e.key==="Enter")commit();
+          if(e.key==="Escape")closeAdd();
+        });
+      };
+      closeAdd();
+      div.appendChild(ul); div.appendChild(addrow); sec.appendChild(div);
+    });
+    frag.appendChild(sec);
+
+    const a=document.createElement("a");
+    a.href="#ch-"+ch.id; a.dataset.nav=ch.id;
+    a.innerHTML=`<span>${ch.title}</span><span class="n" data-navpct="${ch.id}"></span>`;
+    nav.appendChild(a);
+  });
+  main.insertBefore(frag,document.getElementById("empty"));
+}
+
+function filterLabel(){
+  const f=filter==="todo"?"未完成項目":filter==="hot"?"高頻缺失項目":"全部項目";
+  return query?`${f}＋搜尋「${query}」`:f;
+}
+function updatePrintMeta(){
+  document.getElementById("printmeta").textContent=
+    `審查對象：${cur().name}　｜　列印範圍：${filterLabel()}　｜　列印時間：${fmt(Date.now())}　｜　${BUILD}`;
+}
+function refresh(){
+  let total=0, done=0, visible=0;
+  DATA.forEach(ch=>{
+    let ct=0, cd=0, chVisible=0;
+    document.querySelectorAll(`#ch-${ch.id} .sec`).forEach(secEl=>{
+      let secVisible=0;
+      secEl.querySelectorAll("li.item").forEach(li=>{
+        const checked=li.querySelector("input").checked;
+        ct++; if(checked)cd++;
+        const hot=li.dataset.hot==="1";
+        const matchF = filter==="all" || (filter==="todo"&&!checked) || (filter==="hot"&&hot);
+        const matchQ = !query || li.dataset.text.includes(query) || (cur().notes[li.dataset.id]||"").toLowerCase().includes(query);
+        const show=matchF&&matchQ;
+        li.classList.toggle("hide",!show);
+        if(show){secVisible++; visible++;}
+      });
+      secEl.classList.toggle("hide",secVisible===0);
+      chVisible+=secVisible;
+    });
+    document.getElementById("ch-"+ch.id).classList.toggle("hide",chVisible===0);
+    total+=ct; done+=cd;
+    const pct=document.querySelector(`[data-chpct="${ch.id}"]`);
+    if(pct)pct.textContent=`${cd} / ${ct}`;
+    const np=document.querySelector(`[data-navpct="${ch.id}"]`);
+    if(np)np.textContent=`${cd}/${ct}`;
+    const link=document.querySelector(`[data-nav="${ch.id}"]`);
+    if(link)link.classList.toggle("done",ct>0&&cd===ct);
+  });
+  document.getElementById("totalbar").style.width=total?`${done/total*100}%`:"0";
+  document.getElementById("totalpct").textContent=`${done} / ${total} 項`;
+  document.getElementById("empty").style.display=visible?"none":"block";
+  updatePrintMeta();
+  if(typeof schedulePaginate==="function")schedulePaginate();
+}
+
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===c?"true":"false"));
+  refresh();
+}));
+document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();refresh()});
+function renderNote(li){
+  const id=li.dataset.id;
+  const wrap=li.querySelector(".notewrap");
+  if(!cur().notes)cur().notes={};
+  const txt=cur().notes[id]||"";
+  if(wrap.dataset.editing==="1"){
+    wrap.innerHTML=`<textarea class="notearea" placeholder="輸入此項目的筆記或備註…">${esc(txt)}</textarea><div class="noterow"><button class="btn notesave" type="button">完成</button> <button class="btn notecancel" type="button">取消</button></div>`;
+    const ta=wrap.querySelector("textarea");
+    ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+    wrap.querySelector(".notesave").addEventListener("click",()=>{
+      const v=ta.value.trim();
+      if(v)cur().notes[id]=v; else delete cur().notes[id];
+      cur().updated=Date.now(); save();
+      wrap.dataset.editing=""; renderNote(li); refresh(); renderProfiles();
+    });
+    wrap.querySelector(".notecancel").addEventListener("click",()=>{
+      wrap.dataset.editing=""; renderNote(li);
+    });
+    ta.addEventListener("keydown",e=>{
+      if(e.key==="Escape"){wrap.dataset.editing="";renderNote(li)}
+    });
+  }else{
+    wrap.innerHTML=txt?`<span class="note">${esc(txt)}</span>`:"";
+  }
+  const btn=li.querySelector(".notebtn");
+  btn.textContent=txt?"✎ 編輯筆記":"✎ 筆記";
+}
+function renderImgs(li){
+  const id=li.dataset.id;
+  const box=li.querySelector(".thumbs");
+  if(!cur().imgs)cur().imgs={};
+  const keys=cur().imgs[id]||[];
+  box.innerHTML="";
+  for(const k of keys){
+    const d=imgGet(k);
+    if(!d)continue;
+    const t=document.createElement("span"); t.className="thumb";
+    const img=document.createElement("img");
+    img.addEventListener("load",()=>{if(typeof schedulePaginate==="function")schedulePaginate()});
+    img.src=d; img.alt="附圖";
+    const del=document.createElement("button");
+    del.className="imgdel"; del.type="button"; del.textContent="✕";
+    del.setAttribute("aria-label","刪除附圖");
+    del.addEventListener("click",()=>{
+      imgDrop(k);
+      cur().imgs[id]=(cur().imgs[id]||[]).filter(x=>x!==k);
+      if(!cur().imgs[id].length)delete cur().imgs[id];
+      cur().updated=Date.now(); save();
+      renderImgs(li); renderProfiles();
+    });
+    t.appendChild(img); t.appendChild(del); box.appendChild(t);
+  }
+}
+const imgPick=document.getElementById("imgpick");
+let pendingLi=null;
+imgPick.addEventListener("change",async()=>{
+  if(!pendingLi||!imgPick.files.length)return;
+  const li=pendingLi; pendingLi=null;
+  const id=li.dataset.id;
+  const files=[...imgPick.files];
+  if(!cur().imgs)cur().imgs={};
+  for(let i=0;i<files.length;i++){
+    const d=await compressToDataURL(files[i]);
+    if(!d){toast("讀取圖片失敗，請換一張試試");continue}
+    const k=`${db.current}.${id}.${Date.now().toString(36)}-${i}`;
+    if(!imgPut(k,d)){
+      toast("本機儲存空間已滿，這張圖片無法保存。請先刪除部分附圖再試（每台裝置可存的附圖數量有限）");
+      break;
+    }
+    (cur().imgs[id]||(cur().imgs[id]=[])).push(k);
+  }
+  cur().updated=Date.now(); save();
+  renderImgs(li); renderProfiles();
+});
+function applyState(){
+  document.querySelectorAll("li.item").forEach(li=>{
+    li.querySelector("input").checked=!!cur().state[li.dataset.id];
+    const wrap=li.querySelector(".notewrap");
+    wrap.dataset.editing="";
+    renderNote(li);
+    renderImgs(li);
+  });
+}
+function renderProfiles(){
+  const sel=document.getElementById("profile");
+  sel.innerHTML="";
+  Object.entries(db.profiles).forEach(([id,p])=>{
+    const o=document.createElement("option");
+    o.value=id; o.textContent=p.name;
+    if(id===db.current)o.selected=true;
+    sel.appendChild(o);
+  });
+  const p=cur();
+  document.getElementById("pmeta").textContent=p.updated?`上次勾選：${fmt(p.updated)}`:"尚未勾選";
+}
+document.getElementById("profile").addEventListener("change",e=>{
+  db.current=e.target.value; save();
+  applyState(); renderProfiles(); refresh();
+});
+
+const nameForm=document.getElementById("nameform");
+const nameInput=document.getElementById("nameinput");
+let nameMode=null;
+const nameErr=document.getElementById("nameerr");
+function clearNameErr(){nameInput.classList.remove("err");nameErr.textContent=""}
+function openNameForm(mode){
+  nameMode=mode; nameForm.hidden=false; clearNameErr();
+  nameInput.value=mode==="rename"?cur().name:"";
+  nameInput.focus();
+}
+function commitName(){
+  const v=nameInput.value.trim();
+  if(!v){nameInput.classList.add("err");nameErr.textContent="請輸入名稱";return}
+  const dup=Object.entries(db.profiles).some(([id,p])=>
+    p.name===v&&(nameMode==="add"||id!==db.current));
+  if(dup){nameInput.classList.add("err");nameErr.textContent="已有相同名稱的對象，請換一個名稱";return}
+  if(nameMode==="add"){
+    const id="p"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);
+    db.profiles[id]={name:v,state:{},notes:{},imgs:{},updated:null,v:3};
+    db.current=id;
+  }else{
+    cur().name=v;
+  }
+  nameForm.hidden=true; save();
+  renderProfiles(); applyState(); refresh();
+}
+document.getElementById("addprof").addEventListener("click",()=>openNameForm("add"));
+document.getElementById("renameprof").addEventListener("click",()=>openNameForm("rename"));
+document.getElementById("nameok").addEventListener("click",commitName);
+document.getElementById("namecancel").addEventListener("click",()=>{nameForm.hidden=true});
+nameInput.addEventListener("input",clearNameErr);
+nameInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter")commitName();
+  if(e.key==="Escape")nameForm.hidden=true;
+});
+
+function armButton(btn,idleText,armedText,onConfirm){
+  let timer=null;
+  btn.addEventListener("click",()=>{
+    if(btn.dataset.armed){
+      clearTimeout(timer); delete btn.dataset.armed;
+      btn.textContent=idleText; btn.classList.remove("danger");
+      onConfirm();
+    }else{
+      btn.dataset.armed="1";
+      btn.textContent=armedText; btn.classList.add("danger");
+      timer=setTimeout(()=>{
+        delete btn.dataset.armed;
+        btn.textContent=idleText; btn.classList.remove("danger");
+      },4000);
+    }
+  });
+}
+armButton(document.getElementById("resetbtn"),"重設勾選","確定清除此對象的勾選？",()=>{
+  cur().state={}; cur().updated=null; save();
+  applyState(); renderProfiles(); refresh();
+});
+armButton(document.getElementById("delprof"),"刪除","確定刪除此對象？",()=>{
+  Object.values(cur().imgs||{}).flat().forEach(k=>imgDrop(k));
+  delete db.profiles[db.current];
+  if(!Object.keys(db.profiles).length){
+    const id="p"+Date.now().toString(36);
+    db.profiles[id]={name:"預設對象",state:{},notes:{},imgs:{},updated:null,v:3};
+  }
+  db.current=Object.keys(db.profiles)[0]; save();
+  renderProfiles(); applyState(); refresh();
+});
+const printBtn=document.getElementById("printbtn");
+let printed=false, toastTimer=null;
+function paginate(){
+  document.querySelectorAll(".pb").forEach(el=>el.classList.remove("pb"));
+  const BUDGET=232*96/25.4;
+  const units=[];
+  document.querySelectorAll("section.chapter:not(.hide)").forEach(secEl=>{
+    const chHead=secEl.querySelector(".ch-head");
+    if(chHead)units.push({el:chHead,keep:true});
+    secEl.querySelectorAll(".sec:not(.hide)").forEach(s=>{
+      const h3=s.querySelector("h3");
+      if(h3)units.push({el:h3,keep:true});
+      s.querySelectorAll("li.item:not(.hide)").forEach(li=>{
+        units.push({el:li.querySelector("label.row")});
+        const nw=li.querySelector(".notewrap");
+        if(nw&&nw.textContent.trim())units.push({el:nw});
+        li.querySelectorAll(".thumb").forEach(t=>units.push({el:t}));
+      });
+    });
+  });
+  if(!units.length)return;
+  const rs=units.map(u=>u.el.getBoundingClientRect());
+  const hdr=document.querySelector("header.top");
+  const base=hdr?hdr.getBoundingClientRect().top:rs[0].top;
+  let y=rs[0].top-base, stick=false;
+  units.forEach((u,i)=>{
+    if(i>0)y+=Math.max(0,rs[i].top-(rs[i-1].top+rs[i-1].height));
+    let need=rs[i].height, j=i;
+    while(units[j].keep&&j+1<units.length){
+      need+=Math.max(0,rs[j+1].top-(rs[j].top+rs[j].height))+rs[j+1].height;
+      j++;
+    }
+    if(!stick&&y>0&&y+need>BUDGET){u.el.classList.add("pb");y=0;}
+    y+=rs[i].height;
+    stick=!!u.keep;
+  });
+}
+let pgTimer=null;
+function repaginate(){
+  const de=document.documentElement;
+  if(de.classList.contains("pmode")){try{paginate()}catch(e){} return;}
+  de.classList.add("pmode");
+  updatePrintMeta();
+  try{paginate()}catch(e){}
+  de.classList.remove("pmode");
+}
+function schedulePaginate(){clearTimeout(pgTimer); pgTimer=setTimeout(repaginate,300);}
+// ===== 自製 PDF 輸出（不依賴瀏覽器列印排版，圖片絕不跨頁） =====
+const INK="#22303A", MUTED="#5D6B74", SEAL="#A8402B", ACCENT="#1F4E6B", OK="#2F7A57", LINE="#E3E5E0";
+function renderPdfPages(){
+  const S=150/25.4;                       // 150dpi：每 mm 的像素數
+  const W=Math.round(210*S), H=Math.round(297*S), M=Math.round(14*S);
+  const maxW=W-2*M;
+  const pages=[]; let g=null, y=0;
+  const F=n=>`${n}px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif`;
+  const FB=n=>`bold ${n}px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif`;
+  function newPage(){
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,W,H);
+    y=M; pages.push(c);
+  }
+  const ensure=h=>{ if(y+h>H-M)newPage(); };
+  function wrap(text,font,width){
+    g.font=font; const lines=[]; let line="";
+    for(const ch of String(text)){
+      if(ch==="\n"){lines.push(line);line="";continue}
+      if(line&&g.measureText(line+ch).width>width){lines.push(line);line=ch}
+      else line+=ch;
+    }
+    if(line)lines.push(line);
+    return lines.length?lines:[""];
+  }
+  function textBlock(text,font,color,x,width,lh){
+    const lines=wrap(text,font,width);
+    for(const ln of lines){
+      if(y+lh>H-M)newPage();
+      g.font=font; g.fillStyle=color;
+      g.fillText(ln,x,y+lh*0.78);
+      y+=lh;
+    }
+  }
+  function drawBox(x,yy,size,checked){
+    if(checked){
+      g.fillStyle=OK; g.fillRect(x,yy,size,size);
+      g.strokeStyle="#fff"; g.lineWidth=3; g.beginPath();
+      g.moveTo(x+size*0.22,yy+size*0.55); g.lineTo(x+size*0.44,yy+size*0.76); g.lineTo(x+size*0.8,yy+size*0.26);
+      g.stroke();
+    }else{
+      g.strokeStyle=MUTED; g.lineWidth=2; g.strokeRect(x,yy,size,size);
+    }
+  }
+  newPage();
+  // 頁首
+  textBlock("優質企業審查清單",FB(46),INK,M,maxW,60);
+  y+=6;
+  textBlock(`審查對象：${cur().name}　｜　範圍：${filterLabel()}　｜　${fmt(Date.now())}　｜　${BUILD}`,F(21),MUTED,M,maxW,30);
+  y+=6; g.fillStyle=INK; g.fillRect(M,y,maxW,3); y+=22;
+  // 內容（依目前篩選的可見項目）
+  document.querySelectorAll("section.chapter:not(.hide)").forEach(secEl=>{
+    const badge=secEl.querySelector(".ch-num"), h2=secEl.querySelector(".ch-head h2");
+    ensure(140);
+    y+=14;
+    textBlock(`${badge?badge.textContent:""}　${h2?h2.textContent:""}`,FB(34),INK,M,maxW,46);
+    g.fillStyle=LINE; g.fillRect(M,y+2,maxW,2); y+=16;
+    secEl.querySelectorAll(".sec:not(.hide)").forEach(s=>{
+      const h3=s.querySelector("h3");
+      ensure(110);
+      y+=10;
+      if(h3){
+        const code=h3.querySelector(".code");
+        const label=code?code.textContent+"　"+h3.textContent.slice(code.textContent.length):h3.textContent;
+        textBlock(label,FB(26),ACCENT,M,maxW,36);
+      }
+      y+=4;
+      s.querySelectorAll("li.item:not(.hide)").forEach(li=>{
+        const checked=li.querySelector("input").checked;
+        let t=li.querySelector(".t").textContent;
+        if(li.classList.contains("custom"))t+="（自訂）";
+        if(li.dataset.hot==="1")t+="【高頻缺失】";
+        const bs=22, tx=M+bs+14, tw=maxW-bs-14;
+        const tLines=wrap(t,F(23),tw);
+        ensure(Math.min(tLines.length,2)*32+6);
+        const boxY=y+5;
+        drawBox(M,boxY,bs,checked);
+        textBlock(t,F(23),INK,tx,tw,32);
+        const pit=li.querySelector(".pit");
+        if(pit)textBlock("常見缺失：" +pit.textContent,F(20),SEAL,tx,tw,28);
+        const note=cur().notes[li.dataset.id];
+        if(note){
+          y+=4;
+          const barTop=y, pageBefore=pages.length;
+          textBlock("筆記：" +note,F(20),ACCENT,tx+10,tw-10,28);
+          if(pages.length===pageBefore){g.fillStyle=ACCENT; g.fillRect(tx,barTop,4,y-barTop);}
+        }
+        li.querySelectorAll(".thumb img").forEach(img=>{
+          const iw=img.naturalWidth||1, ih=img.naturalHeight||1;
+          const availH=H-2*M-10;
+          let dw=Math.min(maxW*0.72, iw), dh=dw*ih/iw;
+          const maxH=Math.min(72*S, availH);
+          if(dh>maxH){dh=maxH; dw=dh*iw/ih;}
+          if(y+dh+10>H-M)newPage();
+          try{g.drawImage(img,tx,y+4,dw,dh)}catch(e){}
+          g.strokeStyle=LINE; g.lineWidth=1; g.strokeRect(tx,y+4,dw,dh);
+          y+=dh+12;
+        });
+        y+=6;
+        g.fillStyle=LINE; g.fillRect(M,y,maxW,1); y+=8;
+      });
+    });
+  });
+  // 頁碼
+  pages.forEach((c,i)=>{
+    const gg=c.getContext("2d");
+    gg.font=F(18); gg.fillStyle=MUTED; gg.textAlign="center";
+    gg.fillText(`${i+1} / ${pages.length}`,W/2,H-Math.round(M/2.5));
+    gg.textAlign="left";
+  });
+  return pages.map(c=>({data:c.toDataURL("image/jpeg",0.85),w:c.width,h:c.height}));
+}
+function b64ToBytes(b64){
+  const s=atob(b64); const a=new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);
+  return a;
+}
+function buildPdf(pages){
+  const enc=new TextEncoder();
+  const chunks=[]; let pos=0;
+  const push=x=>{const b=typeof x==="string"?enc.encode(x):x; chunks.push(b); pos+=b.length;};
+  const off=[];
+  push("%PDF-1.4\n");
+  const n=pages.length;
+  const kids=pages.map((_,i)=>`${3+i*3} 0 R`).join(" ");
+  off[1]=pos; push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+  off[2]=pos; push(`2 0 obj\n<< /Type /Pages /Kids [${kids}] /Count ${n} >>\nendobj\n`);
+  pages.forEach((p,i)=>{
+    const po=3+i*3, co=po+1, io=po+2;
+    off[po]=pos;
+    push(`${po} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im${i} ${io} 0 R >> >> /Contents ${co} 0 R >>\nendobj\n`);
+    const cs=`q 595.28 0 0 841.89 0 0 cm /Im${i} Do Q`;
+    off[co]=pos;
+    push(`${co} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+    const jpg=b64ToBytes(p.data.split(",")[1]);
+    off[io]=pos;
+    push(`${io} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${p.w} /Height ${p.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);
+    push(jpg);
+    push("\nendstream\nendobj\n");
+  });
+  const total=3+n*3;
+  const xref=pos;
+  let x=`xref\n0 ${total}\n0000000000 65535 f \n`;
+  for(let i=1;i<total;i++)x+=String(off[i]).padStart(10,"0")+" 00000 n \n";
+  push(x);
+  push(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  const out=new Uint8Array(pos); let o=0;
+  chunks.forEach(c=>{out.set(c,o);o+=c.length});
+  return out;
+}
+function showPdfOverlay(pages){
+  const old=document.getElementById("pdfov");
+  if(old)old.remove();
+  const ov=document.createElement("div"); ov.id="pdfov";
+  ov.innerHTML='<div class="pdfov-bar"><span>已排好版、不會被切頁。<b>長按每一頁圖片→「加入照片」</b>保存；再到「照片」App 選取這些頁面→分享→列印，即可整份印出。</span><button class="btn" id="pdfovclose" style="flex:none">關閉</button></div><div class="pdfov-pages"></div>';
+  const wrap=ov.querySelector(".pdfov-pages");
+  pages.forEach((p,i)=>{
+    const im=document.createElement("img");
+    im.src=p.data; im.alt="第 "+(i+1)+" 頁";
+    wrap.appendChild(im);
+  });
+  document.body.appendChild(ov);
+  ov.querySelector("#pdfovclose").addEventListener("click",()=>ov.remove());
+}
+async function exportPdf(){
+  const btn=document.getElementById("pdfbtn");
+  btn.disabled=true; btn.textContent="產生中…";
+  try{
+    const pages=renderPdfPages();
+    const bytes=buildPdf(pages);
+    const name="AEO審查清單-"+cur().name+".pdf";
+    let shareErr=null;
+    if(navigator.share){
+      try{
+        const file=new File([bytes],name,{type:"application/pdf"});
+        if(!navigator.canShare||navigator.canShare({files:[file]})){
+          await navigator.share({files:[file]});
+          toast("PDF 已產生。可在分享面板選「列印」直接印（不會被切頁），或「儲存到檔案」保存");
+          return;
+        }
+        shareErr="cannot-share-files";
+      }catch(e){
+        if(e&&e.name==="AbortError")return;
+        shareErr=(e&&e.name)||"share-failed";
+      }
+    }
+    try{
+      const url=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
+      const w=window.open(url,"_blank");
+      if(w){
+        toast("PDF 已在新分頁開啟。在新分頁按瀏覽器的「分享」→「列印」或「儲存到檔案」");
+        return;
+      }
+    }catch(e){}
+    if(!(window.claude&&window.claude.use)){
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
+      a.download=name; document.body.appendChild(a); a.click(); a.remove();
+      toast("已嘗試下載 PDF");
+      return;
+    }
+    showPdfOverlay(pages);
+    toast("此環境無法直接輸出 PDF 檔"+(shareErr?"（"+shareErr+"）":"")+"，已改為逐頁預覽——長按各頁存到「照片」後即可整份列印");
+  }catch(e){
+    toast("PDF 產生失敗（"+((e&&e.message)||e)+"），請回報");
+  }finally{
+    btn.disabled=false; btn.textContent="輸出 PDF";
+  }
+}
+document.getElementById("pdfbtn").addEventListener("click",exportPdf);
+function printPrep(){
+  document.documentElement.classList.add("pmode");
+  updatePrintMeta();
+  try{paginate()}catch(e){}
+}
+function printCleanup(){
+  document.documentElement.classList.remove("pmode");
+}
+window.addEventListener("beforeprint",printPrep);
+window.addEventListener("afterprint",()=>{printed=true;printCleanup()});
+try{
+  const mqp=matchMedia("print");
+  const onmq=e=>{if(e.matches)printPrep();else printCleanup()};
+  if(mqp.addEventListener)mqp.addEventListener("change",onmq);
+  else if(mqp.addListener)mqp.addListener(onmq);
+}catch(e){}
+function toast(msg){
+  let el=document.getElementById("toast");
+  if(!el){
+    el=document.createElement("div"); el.id="toast"; el.setAttribute("role","status");
+    document.body.appendChild(el);
+  }
+  el.innerHTML=msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),8000);
+}
+printBtn.addEventListener("click",()=>{
+  printed=false;
+  printPrep();
+  try{window.print()}catch(e){}
+  setTimeout(()=>{
+    if(!printed){
+      printCleanup();
+      toast("目前設定只會印出「"+filterLabel()+"」。<b>iPad</b>：點瀏覽器右上「分享」→「列印」；<b>電腦</b>：按 Ctrl／Cmd＋P");
+    }
+  },600);
+});
+
+function buildCopyHtml(){
+  let h=`<h1 style="font-size:18pt">優質企業審查清單</h1>`+
+    `<p>審查對象：${esc(cur().name)}｜範圍：${filterLabel()}｜${fmt(Date.now())}</p>`;
+  document.querySelectorAll("section.chapter:not(.hide)").forEach(sec=>{
+    const badge=sec.querySelector(".ch-num"), head=sec.querySelector(".ch-head h2");
+    h+=`<h2 style="font-size:14pt">${esc(badge?badge.textContent:"")}　${esc(head?head.textContent:"")}</h2>`;
+    sec.querySelectorAll(".sec:not(.hide)").forEach(s=>{
+      const h3=s.querySelector("h3");
+      if(h3)h+=`<h3 style="font-size:12pt">${esc(h3.textContent)}</h3>`;
+      s.querySelectorAll("li.item:not(.hide)").forEach(li=>{
+        const checked=li.querySelector("input").checked;
+        const t=li.querySelector(".t").textContent;
+        const pit=li.querySelector(".pit");
+        h+=`<p style="margin:4pt 0">${checked?"☑":"☐"} ${esc(t)}${li.classList.contains("custom")?"【自訂】":""}${li.dataset.hot==="1"?"【高頻缺失】":""}`;
+        if(pit)h+=`<br><span style="color:#A8402B">常見缺失：${esc(pit.textContent)}</span>`;
+        const note=cur().notes[li.dataset.id];
+        if(note)h+=`<br><b>筆記：</b>${esc(note).replace(/\n/g,"<br>")}`;
+        h+=`</p>`;
+        (cur().imgs[li.dataset.id]||[]).forEach(k=>{
+          const d=imgGet(k);
+          if(d)h+=`<p><img src="${d}" style="max-width:420px"></p>`;
+        });
+      });
+    });
+  });
+  return h;
+}
+document.getElementById("copybtn").addEventListener("click",()=>{
+  const html=buildCopyHtml();
+  const div=document.createElement("div");
+  div.style.cssText="position:fixed;left:-9999px;top:0;background:#fff;color:#000";
+  div.innerHTML=html;
+  document.body.appendChild(div);
+  const r=document.createRange(); r.selectNodeContents(div);
+  const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(e){}
+  sel.removeAllRanges(); div.remove();
+  if(ok){
+    toast("已複製「"+filterLabel()+"」（含勾選、筆記與附圖）。請貼到 <b>Google 文件</b>——圖片會正常顯示；需要 Word 檔時再從 Google 文件「下載 → Word (.docx)」。直接貼 Word 圖片會變空白。");
+  }else{
+    try{
+      navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"})})])
+        .then(()=>toast("已複製。請貼到 <b>Google 文件</b>（直接貼 Word 圖片會空白）"))
+        .catch(()=>toast("此環境無法使用複製功能，請改用列印"));
+    }catch(e){toast("此環境無法使用複製功能，請改用列印")}
+  }
+});
+
+const toTop=document.getElementById("totop");
+window.addEventListener("scroll",()=>{
+  toTop.classList.toggle("show",window.scrollY>400);
+},{passive:true});
+toTop.addEventListener("click",()=>{
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+});
+
+function buildCloudPayload(){
+  const images={};
+  Object.values(db.profiles).forEach(p=>Object.values(p.imgs||{}).flat().forEach(k=>{
+    const d=imgGet(k); if(d)images[k]=d;
+  }));
+  return {v:1,saved:Date.now(),db:db,images:images};
+}
+function pageSource(payload){
+  const style=document.getElementById("appcss").textContent;
+  const app=document.getElementById("app").textContent;
+  const shell=document.getElementById("shell").outerHTML;
+  const json=JSON.stringify(payload).replace(/</g,"\\u003c");
+  return '<!doctype html>\n<html lang="zh-Hant"><head><meta charset="utf-8">'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<title>AEO 優質企業審查清單</title>'
+    +'<style id="appcss">'+style+'</style></head><body>'
+    +shell
+    +'<script type="application/json" id="cloudstate">'+json+'</'+'script>'
+    +'<script id="app">'+app+'</'+'script>'
+    +'</body></html>';
+}
+function updateCloudUI(){
+  const line=document.getElementById("cloudline");
+  const btn=document.getElementById("cloudbtn");
+  if(!line||!btn)return;
+  if(!(window.claude&&window.claude.use)){
+    line.textContent="資料儲存於此裝置——請定期按「匯出備份」保存一份";
+    line.classList.remove("dirty");
+    btn.style.display="none";
+    return;
+  }
+  let dirty=false;
+  try{dirty=localStorage.getItem(DIRTYKEY)==="1"}catch(e){}
+  let s="☁️ 雲端儲存："+(cloudSavedAt?"上次 "+fmt(cloudSavedAt):"尚未儲存過");
+  if(cloudRO)s="☁️ 此檢視為唯讀，無法雲端儲存——請改用「匯出備份」保存資料";
+  else if(dirty)s+="　● 有尚未上傳的變更";
+  line.textContent=s;
+  line.classList.toggle("dirty",dirty&&!cloudRO);
+  btn.disabled=cloudRO||cloudBusy;
+  btn.textContent=cloudBusy?"☁️ 儲存中…":"☁️ 儲存雲端";
+}
+async function cloudSave(){
+  if(cloudBusy||cloudRO)return;
+  if(!(window.claude&&window.claude.use)){
+    toast("此環境不支援雲端儲存（請透過 claude.ai 的頁面連結開啟），請改用「匯出備份」");
+    return;
+  }
+  cloudBusy=true; updateCloudUI();
+  const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout"}),ms))]);
+  try{
+    const art=await withTimeout(window.claude.use("artifact"),12000);
+    if(!art)throw {code:"not_granted"};
+    const payload=buildCloudPayload();
+    const html=pageSource(payload);
+    sessionStorage.setItem("aeo-cloud-msg","已儲存到雲端（"+fmt(payload.saved)+"）。勾選、筆記與附圖已跟著本頁保存。");
+    sessionStorage.setItem("aeo-scroll",String(window.scrollY||0));
+    try{localStorage.removeItem(DIRTYKEY)}catch(e){}
+    await withTimeout(art.publish(html),60000);
+    cloudSavedAt=payload.saved;
+  }catch(e){
+    sessionStorage.removeItem("aeo-cloud-msg");
+    sessionStorage.removeItem("aeo-scroll");
+    try{localStorage.setItem(DIRTYKEY,"1")}catch(e2){}
+    const code=e&&e.code;
+    if(code==="conflict"){
+      toast("雲端上已有更新的版本，頁面會自動重新載入；載入後請再按一次「儲存雲端」");
+    }else if(code==="not_writer"||code==="not_granted"||code==="consent_required"||code==="capability_disabled"||code==="capability_removed"){
+      cloudRO=true;
+      toast("此檢視未取得雲端儲存權限（"+code+"）。最常見原因：分享連結釘住舊版本——請頁面擁有者到分享選單把版本更新到最新，再重新開啟本頁；若仍不行表示此帳號對頁面唯讀，請改用「匯出備份」");
+    }else if(code==="too_large"){
+      toast("資料量太大（多半是附圖太多），雲端儲存失敗。請刪除部分附圖，或改用「匯出備份」");
+    }else if(code==="rate_limited"){
+      toast("儲存太頻繁，請稍等一下再試");
+    }else if(code==="timeout"){
+      toast("連不上雲端儲存服務（逾時）。請確認是從 claude.ai 連結開啟、網路正常，稍後再試；不放心先按「匯出備份」");
+    }else{
+      toast("雲端儲存失敗（"+(code||String((e&&e.message)||e||"未知錯誤"))+"），請稍後再試；不放心的話請先按「匯出備份」");
+    }
+  }finally{cloudBusy=false; updateCloudUI()}
+}
+function exportBackup(){
+  const data=JSON.stringify(buildCloudPayload());
+  const ta=document.createElement("textarea");
+  ta.style.cssText="position:fixed;left:-9999px;top:0";
+  ta.value=data;
+  document.body.appendChild(ta);
+  ta.select(); ta.setSelectionRange(0,ta.value.length);
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(e){}
+  ta.remove();
+  if(ok){
+    toast("備份內容已複製到剪貼簿。請開「備忘錄」或任何筆記 App 貼上保存；資料遺失時按「還原備份」再貼回來即可");
+  }else{
+    toast("此環境無法複製，備份失敗。請確認已按「☁️ 儲存雲端」");
+  }
+}
+function doRestore(text){
+  let payload=null;
+  try{payload=JSON.parse(text)}catch(e){}
+  if(!payload||!payload.db||!payload.db.profiles){toast("內容不是有效的備份，請確認貼上的是完整備份文字");return}
+  mergeCloud(payload);
+  Object.entries(db.profiles).forEach(([id,p])=>{
+    const empty=!p.updated&&!Object.keys(p.state||{}).length&&!Object.keys(p.notes||{}).length&&!Object.keys(p.imgs||{}).length;
+    if(empty&&p.name==="預設對象"&&Object.keys(db.profiles).length>1)delete db.profiles[id];
+  });
+  if(db.profiles[payload.db.current])db.current=payload.db.current;
+  if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
+  if(!db.custom)db.custom={};
+  Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
+  save(); renderCustom(); renderProfiles(); applyState(); refresh();
+  restoreForm.hidden=true;
+  toast("備份已還原（每個對象取較新的版本合併）。記得按「☁️ 儲存雲端」讓還原後的資料上雲");
+}
+document.getElementById("cloudbtn").addEventListener("click",cloudSave);
+document.getElementById("bakbtn").addEventListener("click",exportBackup);
+const bakPick=document.getElementById("bakpick");
+const restoreForm=document.getElementById("restoreform");
+const restoreText=document.getElementById("restoretext");
+document.getElementById("restorebtn").addEventListener("click",()=>{
+  restoreForm.hidden=!restoreForm.hidden;
+  if(!restoreForm.hidden){restoreText.value="";restoreText.focus()}
+});
+document.getElementById("restorecancel").addEventListener("click",()=>{restoreForm.hidden=true});
+document.getElementById("restorefile").addEventListener("click",()=>{bakPick.value="";bakPick.click()});
+document.getElementById("restoreok").addEventListener("click",()=>{
+  const v=restoreText.value.trim();
+  if(!v){toast("請先貼上備份內容，或按「選擇備份檔」");return}
+  doRestore(v);
+});
+bakPick.addEventListener("change",()=>{
+  const f=bakPick.files[0]; if(!f)return;
+  const fr=new FileReader();
+  fr.onload=()=>doRestore(fr.result);
+  fr.readAsText(f);
+});
+
+build(); renderCustom(); applyState(); renderProfiles(); refresh();
+booting=false; updateCloudUI();
+window.addEventListener("load",()=>{if(typeof schedulePaginate==="function")schedulePaginate()});
+(function(){
+  const m=sessionStorage.getItem("aeo-cloud-msg");
+  if(m){sessionStorage.removeItem("aeo-cloud-msg");toast(m)}
+  const sy=sessionStorage.getItem("aeo-scroll");
+  if(sy!==null){sessionStorage.removeItem("aeo-scroll");window.scrollTo(0,parseInt(sy,10)||0)}
+})();
+
+(async function migrateOldImgs(){
+  const allKeys=Object.values(db.profiles).flatMap(p=>Object.values(p.imgs||{}).flat());
+  let moved=false;
+  for(const k of allKeys){
+    if(imgGet(k))continue;
+    const blob=await idbGet(k);
+    if(!blob)continue;
+    const d=await blobToDataURL(blob);
+    if(d&&imgPut(k,d)){moved=true; idbDel(k)}
+  }
+  if(moved)applyState();
+})();
+</script>
+
+</body></html>
