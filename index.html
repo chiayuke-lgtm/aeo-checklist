@@ -302,6 +302,13 @@ html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
   <button class="btn" id="restorebtn">還原備份</button>
 </div>
 <div class="cloudline" id="cloudline"></div>
+<div class="nameform" id="syncform" hidden>
+  <input id="syncemail" type="email" placeholder="Email" autocomplete="username" aria-label="同步帳號 Email">
+  <input id="syncpass" type="password" placeholder="密碼" autocomplete="current-password" aria-label="同步密碼">
+  <button class="btn" id="syncok">登入</button>
+  <button class="btn" id="synccancel">取消</button>
+  <span class="nameerr" id="syncerr" role="alert"></span>
+</div>
 <div class="nameform" id="restoreform" hidden>
   <textarea id="restoretext" class="notearea" style="min-height:80px" placeholder="把先前匯出的備份內容貼到這裡（或按「選擇備份檔」）" aria-label="備份內容"></textarea>
   <button class="btn" id="restorefile">選擇備份檔</button>
@@ -518,7 +525,9 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="v16";
+const BUILD="v17";
+// Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
+const SUPA={url:"",anon:""};
 const KEY="aeo-checklist-v2";
 const DIRTYKEY="aeo-cloud-dirty";
 let db=null, cloudSavedAt=null, cloudRO=false, cloudBusy=false, booting=true;
@@ -617,7 +626,7 @@ const idbDel=k=>idbReady.then(ok=>ok&&new Promise(res=>{
 const IMGPRE="aeoimg.";
 const imgGet=k=>{try{return localStorage.getItem(IMGPRE+k)}catch(e){return null}};
 const imgPut=(k,d)=>{try{localStorage.setItem(IMGPRE+k,d);return true}catch(e){return false}};
-const imgDrop=k=>{try{localStorage.removeItem(IMGPRE+k)}catch(e){} idbDel(k)};
+const imgDrop=k=>{try{localStorage.removeItem(IMGPRE+k)}catch(e){} idbDel(k); supaDeleteImg(k)};
 
 const blobToDataURL=blob=>new Promise(res=>{
   const fr=new FileReader();
@@ -648,6 +657,7 @@ const save=()=>{
   if(!booting){
     try{localStorage.setItem(DIRTYKEY,"1")}catch(e){}
     updateCloudUI();
+    scheduleSync();
   }
 };
 const fmt=ts=>new Date(ts).toLocaleString("zh-TW",{year:"numeric",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
@@ -977,8 +987,10 @@ armButton(document.getElementById("resetbtn"),"重設勾選","確定清除此對
   applyState(); renderProfiles(); refresh();
 });
 armButton(document.getElementById("delprof"),"刪除","確定刪除此對象？",()=>{
+  const deadId=db.current;
   Object.values(cur().imgs||{}).flat().forEach(k=>imgDrop(k));
   delete db.profiles[db.current];
+  supaDeleteProfile(deadId);
   if(!Object.keys(db.profiles).length){
     const id="p"+Date.now().toString(36);
     db.profiles[id]={name:"預設對象",state:{},notes:{},imgs:{},updated:null,v:3};
@@ -1360,14 +1372,185 @@ function pageSource(payload){
     +'<script id="app">'+app+'</'+'script>'
     +'</body></html>';
 }
+// ===== Supabase 雲端同步（本機優先，變更後自動上雲） =====
+const IN_ARTIFACT=()=>!!(window.claude&&window.claude.use)||/(^|\.)claude\.ai$/.test(location.hostname);
+const supaEnabled=()=>!!(SUPA.url&&SUPA.anon)&&!IN_ARTIFACT();
+let supaTok=null, syncTimer=null, syncBusy=false, syncErr=null, lastSync=null, syncPending=false;
+let uploadedImgs=new Set();
+try{uploadedImgs=new Set(JSON.parse(localStorage.getItem("aeo-supaimgs")||"[]"))}catch(e){}
+const persistUploaded=()=>{try{localStorage.setItem("aeo-supaimgs",JSON.stringify([...uploadedImgs]))}catch(e){}};
+function supaLoadTok(){try{supaTok=JSON.parse(localStorage.getItem("aeo-supatok")||"null")}catch(e){supaTok=null}}
+function supaSaveTok(){try{if(supaTok)localStorage.setItem("aeo-supatok",JSON.stringify(supaTok));else localStorage.removeItem("aeo-supatok")}catch(e){}}
+async function supaLogin(email,pass){
+  const r=await fetch(SUPA.url+"/auth/v1/token?grant_type=password",{
+    method:"POST",headers:{apikey:SUPA.anon,"Content-Type":"application/json"},
+    body:JSON.stringify({email:email,password:pass})
+  });
+  if(!r.ok)throw new Error(r.status===400?"帳號或密碼錯誤":"登入失敗（"+r.status+"）");
+  const j=await r.json();
+  supaTok={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:Date.now()+(j.expires_in-60)*1000};
+  supaSaveTok();
+}
+async function supaEnsureTok(){
+  if(!supaTok)throw new Error("not-logged-in");
+  if(Date.now()<supaTok.expires_at)return supaTok.access_token;
+  const r=await fetch(SUPA.url+"/auth/v1/token?grant_type=refresh_token",{
+    method:"POST",headers:{apikey:SUPA.anon,"Content-Type":"application/json"},
+    body:JSON.stringify({refresh_token:supaTok.refresh_token})
+  });
+  if(!r.ok){
+    if(r.status===400||r.status===401){supaTok=null;supaSaveTok();updateCloudUI()}
+    throw new Error("登入已過期，請重新登入");
+  }
+  const j=await r.json();
+  supaTok={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:Date.now()+(j.expires_in-60)*1000};
+  supaSaveTok();
+  return supaTok.access_token;
+}
+async function supaFetch(path,opt){
+  const tok=await supaEnsureTok();
+  opt=opt||{};
+  opt.headers=Object.assign({apikey:SUPA.anon,Authorization:"Bearer "+tok},opt.headers||{});
+  const r=await fetch(SUPA.url+path,opt);
+  if(!r.ok)throw new Error(path.split("?")[0].split("/").pop()+" "+r.status);
+  return r;
+}
+function scheduleSync(){
+  if(!supaEnabled()||!supaTok)return;
+  syncPending=true;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(syncUp,2500);
+  updateCloudUI();
+}
+async function syncUp(){
+  if(syncBusy){scheduleSync();return}
+  if(!supaEnabled()||!supaTok)return;
+  syncBusy=true; syncPending=false; updateCloudUI();
+  try{
+    for(const p of Object.values(db.profiles)){
+      for(const k of Object.values(p.imgs||{}).flat()){
+        if(uploadedImgs.has(k))continue;
+        const d=imgGet(k); if(!d)continue;
+        await supaFetch("/storage/v1/object/evidence/"+encodeURIComponent(k)+".jpg",{
+          method:"POST",headers:{"Content-Type":"image/jpeg","x-upsert":"true"},
+          body:b64ToBytes(d.split(",")[1])
+        });
+        uploadedImgs.add(k); persistUploaded();
+      }
+    }
+    const rows=Object.entries(db.profiles).map(([id,p])=>({
+      id:id,name:p.name,updated:p.updated||0,
+      data:{state:p.state||{},notes:p.notes||{},imgs:p.imgs||{},v:p.v||3}
+    }));
+    await supaFetch("/rest/v1/profiles_data",{
+      method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},
+      body:JSON.stringify(rows)
+    });
+    await supaFetch("/rest/v1/app_state",{
+      method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},
+      body:JSON.stringify([{id:"main",data:{custom:db.custom||{}},updated:Date.now()}])
+    });
+    lastSync=Date.now(); syncErr=null;
+  }catch(e){
+    syncErr=(e&&e.message)||"同步失敗";
+    clearTimeout(syncTimer); syncTimer=setTimeout(syncUp,30000);
+  }finally{
+    syncBusy=false; updateCloudUI();
+  }
+}
+async function syncDown(){
+  const r=await supaFetch("/rest/v1/profiles_data?select=*");
+  const rows=await r.json();
+  rows.forEach(row=>{
+    const lp=db.profiles[row.id];
+    if(!lp||(row.updated||0)>(lp.updated||0)){
+      const d=row.data||{};
+      db.profiles[row.id]={name:row.name||"未命名",state:d.state||{},notes:d.notes||{},imgs:d.imgs||{},updated:row.updated||null,v:d.v||3};
+    }
+  });
+  const r2=await supaFetch("/rest/v1/app_state?id=eq.main&select=*");
+  const st=(await r2.json())[0];
+  if(st&&st.data&&st.data.custom){
+    if(!db.custom)db.custom={};
+    Object.entries(st.data.custom).forEach(([code,items])=>{
+      const loc=db.custom[code]||(db.custom[code]=[]);
+      items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
+    });
+  }
+  Object.entries(db.profiles).forEach(([id,p])=>{
+    const empty=!p.updated&&!Object.keys(p.state||{}).length&&!Object.keys(p.notes||{}).length&&!Object.keys(p.imgs||{}).length;
+    if(empty&&p.name==="預設對象"&&Object.keys(db.profiles).length>1){
+      delete db.profiles[id];
+      supaDeleteProfile(id);
+    }
+  });
+  if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
+  Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
+  save();
+  renderCustom(); renderProfiles(); applyState(); refresh();
+  for(const p of Object.values(db.profiles)){
+    for(const k of Object.values(p.imgs||{}).flat()){
+      if(imgGet(k)){uploadedImgs.add(k);continue}
+      try{
+        const rr=await supaFetch("/storage/v1/object/evidence/"+encodeURIComponent(k)+".jpg");
+        const d=await blobToDataURL(await rr.blob());
+        if(d&&imgPut(k,d)){uploadedImgs.add(k)}
+      }catch(e){}
+    }
+  }
+  persistUploaded();
+  applyState();
+  lastSync=Date.now(); updateCloudUI();
+}
+function supaDeleteProfile(id){
+  if(!supaEnabled()||!supaTok)return;
+  supaFetch("/rest/v1/profiles_data?id=eq."+encodeURIComponent(id),{method:"DELETE"}).catch(()=>{});
+}
+function supaDeleteImg(k){
+  if(!supaEnabled()||!supaTok)return;
+  uploadedImgs.delete(k); persistUploaded();
+  supaFetch("/storage/v1/object/evidence/"+encodeURIComponent(k)+".jpg",{method:"DELETE"}).catch(()=>{});
+}
+function supaLogout(){
+  supaTok=null; supaSaveTok(); updateCloudUI();
+  toast("已登出雲端同步。資料仍在本機；重新登入即可繼續同步");
+}
 function updateCloudUI(){
   const line=document.getElementById("cloudline");
   const btn=document.getElementById("cloudbtn");
   if(!line||!btn)return;
-  if(!(window.claude&&window.claude.use)){
-    line.textContent="資料儲存於此裝置——請定期按「匯出備份」保存一份";
-    line.classList.remove("dirty");
+  if(!IN_ARTIFACT()){
     btn.style.display="none";
+    if(!supaEnabled()){
+      line.textContent="資料儲存於此裝置——請定期按「匯出備份」保存一份";
+      line.classList.remove("dirty");
+      return;
+    }
+    line.innerHTML="";
+    const span=document.createElement("span");
+    if(!supaTok){
+      span.textContent="☁️ 雲端同步：未登入　";
+      const b=document.createElement("button"); b.className="btn"; b.textContent="登入";
+      b.addEventListener("click",()=>{
+        const f=document.getElementById("syncform");
+        f.hidden=false; document.getElementById("syncerr").textContent="";
+        document.getElementById("syncemail").focus();
+      });
+      line.appendChild(span); line.appendChild(b);
+      line.classList.add("dirty");
+    }else{
+      let s="☁️ 雲端同步：";
+      if(syncErr)s+="⚠ "+syncErr+"（30 秒後自動重試）";
+      else if(syncBusy)s+="同步中…";
+      else if(syncPending)s+="待同步…";
+      else if(lastSync)s+="已同步 "+fmt(lastSync);
+      else s+="已登入";
+      span.textContent=s+"　";
+      const b=document.createElement("button"); b.className="btn"; b.textContent="登出";
+      b.addEventListener("click",supaLogout);
+      line.appendChild(span); line.appendChild(b);
+      line.classList.toggle("dirty",!!syncErr);
+    }
     return;
   }
   let dirty=false;
@@ -1419,8 +1602,33 @@ async function cloudSave(){
     }
   }finally{cloudBusy=false; updateCloudUI()}
 }
+function dlFile(data,name,mime){
+  try{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([data],{type:mime}));
+    a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    return true;
+  }catch(e){return false}
+}
 function exportBackup(){
   const data=JSON.stringify(buildCloudPayload());
+  const name="AEO審查備份-"+new Date().toISOString().slice(0,10)+".json";
+  if(!IN_ARTIFACT()){
+    try{
+      const file=new File([data],name,{type:"application/json"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
+        navigator.share({files:[file]})
+          .then(()=>toast("備份檔已匯出——建議存到「檔案」的 iCloud Drive；還原時按「還原備份→選擇備份檔」"))
+          .catch(e=>{
+            if(!(e&&e.name==="AbortError")){
+              if(dlFile(data,name,"application/json"))toast("備份檔已下載");
+            }
+          });
+        return;
+      }
+    }catch(e){}
+    if(dlFile(data,name,"application/json")){toast("備份檔已下載");return}
+  }
   const ta=document.createElement("textarea");
   ta.style.cssText="position:fixed;left:-9999px;top:0";
   ta.value=data;
@@ -1474,9 +1682,35 @@ bakPick.addEventListener("change",()=>{
   fr.onload=()=>doRestore(fr.result);
   fr.readAsText(f);
 });
+const syncForm=document.getElementById("syncform");
+document.getElementById("synccancel").addEventListener("click",()=>{syncForm.hidden=true});
+document.getElementById("syncok").addEventListener("click",async()=>{
+  const em=document.getElementById("syncemail").value.trim();
+  const pw=document.getElementById("syncpass").value;
+  const err=document.getElementById("syncerr");
+  if(!em||!pw){err.textContent="請輸入 Email 與密碼";return}
+  err.textContent="登入中…";
+  try{
+    await supaLogin(em,pw);
+    syncForm.hidden=true;
+    document.getElementById("syncpass").value="";
+    updateCloudUI();
+    toast("登入成功，正在同步資料…");
+    await syncDown();
+    scheduleSync();
+    toast("雲端同步完成");
+  }catch(e){
+    err.textContent=(e&&e.message)||"登入失敗";
+  }
+});
 
 build(); renderCustom(); applyState(); renderProfiles(); refresh();
-booting=false; updateCloudUI();
+booting=false;
+supaLoadTok();
+updateCloudUI();
+if(supaEnabled()&&supaTok){
+  syncDown().catch(e=>{syncErr=(e&&e.message)||"同步失敗";updateCloudUI()});
+}
 window.addEventListener("load",()=>{if(typeof schedulePaginate==="function")schedulePaginate()});
 (function(){
   const m=sessionStorage.getItem("aeo-cloud-msg");
