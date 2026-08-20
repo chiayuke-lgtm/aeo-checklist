@@ -139,7 +139,7 @@ label.row:hover{background:var(--accent-soft)}
   margin-bottom:10px; white-space:pre-wrap;
 }
 .note::before{
-  content:"筆記"; font-size:11px; color:var(--accent); border:1px solid var(--accent);
+  content:"備註"; font-size:11px; color:var(--accent); border:1px solid var(--accent);
   border-radius:3px; padding:0 5px; margin-right:7px;
 }
 .notearea{
@@ -525,7 +525,7 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="v19";
+const BUILD="v20";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="aeo-checklist-v2";
@@ -673,7 +673,7 @@ function makeItem(it,id,secText,custom){
   li.className="item"+(custom?" custom":""); li.dataset.id=id;
   li.dataset.hot=it.hot?"1":"0";
   li.dataset.text=(secText+" "+it.t+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
-  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${it.t}</span>${custom?'<span class="cbadge">自訂</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 筆記</button><button class="notebtn imgbtn" type="button">🖼 附圖</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
+  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${it.t}</span>${custom?'<span class="cbadge">補充</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 備註</button><button class="notebtn imgbtn" type="button">🖼 附圖</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
   li.querySelector("input").addEventListener("change",e=>{
     if(e.target.checked)cur().state[id]=true; else delete cur().state[id];
     cur().updated=Date.now();
@@ -746,11 +746,11 @@ function build(){
       });
       const addrow=document.createElement("div"); addrow.className="addrow";
       const closeAdd=()=>{
-        addrow.innerHTML=`<button class="notebtn addcustom" type="button">＋ 自訂項目</button>`;
+        addrow.innerHTML=`<button class="notebtn addcustom" type="button">＋ 補充項目</button>`;
         addrow.querySelector(".addcustom").addEventListener("click",openAdd);
       };
       const openAdd=()=>{
-        addrow.innerHTML=`<input class="custominput" type="text" maxlength="200" placeholder="輸入自訂檢核項目內容…" aria-label="自訂檢核項目"><button class="btn addok" type="button">確定</button><button class="btn addcancel" type="button">取消</button>`;
+        addrow.innerHTML=`<input class="custominput" type="text" maxlength="200" placeholder="輸入補充檢核項目內容…" aria-label="補充檢核項目"><button class="btn addok" type="button">確定</button><button class="btn addcancel" type="button">取消</button>`;
         const inp=addrow.querySelector("input"); inp.focus();
         const commit=()=>{
           const v=inp.value.trim();
@@ -835,7 +835,7 @@ function renderNote(li){
   if(!cur().notes)cur().notes={};
   const txt=cur().notes[id]||"";
   if(wrap.dataset.editing==="1"){
-    wrap.innerHTML=`<textarea class="notearea" placeholder="輸入此項目的筆記或備註…">${esc(txt)}</textarea><div class="noterow"><button class="btn notesave" type="button">完成</button> <button class="btn notecancel" type="button">取消</button></div>`;
+    wrap.innerHTML=`<textarea class="notearea" placeholder="輸入此項目的備註…">${esc(txt)}</textarea><div class="noterow"><button class="btn notesave" type="button">完成</button> <button class="btn notecancel" type="button">取消</button></div>`;
     const ta=wrap.querySelector("textarea");
     ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
     wrap.querySelector(".notesave").addEventListener("click",()=>{
@@ -854,7 +854,7 @@ function renderNote(li){
     wrap.innerHTML=txt?`<span class="note">${esc(txt)}</span>`:"";
   }
   const btn=li.querySelector(".notebtn");
-  btn.textContent=txt?"✎ 編輯筆記":"✎ 筆記";
+  btn.textContent=txt?"✎ 編輯備註":"✎ 備註";
 }
 function renderImgs(li){
   const id=li.dataset.id;
@@ -1117,7 +1117,7 @@ function renderPdfPages(){
       s.querySelectorAll("li.item:not(.hide)").forEach(li=>{
         const checked=li.querySelector("input").checked;
         let t=li.querySelector(".t").textContent;
-        if(li.classList.contains("custom"))t+="（自訂）";
+        if(li.classList.contains("custom"))t+="（補充）";
         if(li.dataset.hot==="1")t+="【高頻缺失】";
         const bs=22, tx=M+bs+14, tw=maxW-bs-14;
         const tLines=wrap(t,F(23),tw);
@@ -1131,7 +1131,7 @@ function renderPdfPages(){
         if(note){
           y+=4;
           const barTop=y, pageBefore=pages.length;
-          textBlock("筆記：" +note,F(20),ACCENT,tx+10,tw-10,28);
+          textBlock("備註：" +note,F(20),ACCENT,tx+10,tw-10,28);
           if(pages.length===pageBefore){g.fillStyle=ACCENT; g.fillRect(tx,barTop,4,y-barTop);}
         }
         li.querySelectorAll(".thumb img").forEach(img=>{
@@ -1308,10 +1308,10 @@ function buildCopyHtml(){
         const checked=li.querySelector("input").checked;
         const t=li.querySelector(".t").textContent;
         const pit=li.querySelector(".pit");
-        h+=`<p style="margin:4pt 0">${checked?"☑":"☐"} ${esc(t)}${li.classList.contains("custom")?"【自訂】":""}${li.dataset.hot==="1"?"【高頻缺失】":""}`;
+        h+=`<p style="margin:4pt 0">${checked?"☑":"☐"} ${esc(t)}${li.classList.contains("custom")?"【補充】":""}${li.dataset.hot==="1"?"【高頻缺失】":""}`;
         if(pit)h+=`<br><span style="color:#A8402B">常見缺失：${esc(pit.textContent)}</span>`;
         const note=cur().notes[li.dataset.id];
-        if(note)h+=`<br><b>筆記：</b>${esc(note).replace(/\n/g,"<br>")}`;
+        if(note)h+=`<br><b>備註：</b>${esc(note).replace(/\n/g,"<br>")}`;
         h+=`</p>`;
         (cur().imgs[li.dataset.id]||[]).forEach(k=>{
           const d=imgGet(k);
@@ -1334,7 +1334,7 @@ document.getElementById("copybtn").addEventListener("click",()=>{
   try{ok=document.execCommand("copy")}catch(e){}
   sel.removeAllRanges(); div.remove();
   if(ok){
-    toast("已複製「"+filterLabel()+"」（含勾選、筆記與附圖）。請貼到 <b>Google 文件</b>——圖片會正常顯示；需要 Word 檔時再從 Google 文件「下載 → Word (.docx)」。直接貼 Word 圖片會變空白。");
+    toast("已複製「"+filterLabel()+"」（含勾選、備註與附圖）。請貼到 <b>Google 文件</b>——圖片會正常顯示；需要 Word 檔時再從 Google 文件「下載 → Word (.docx)」。直接貼 Word 圖片會變空白。");
   }else{
     try{
       navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"})})])
@@ -1578,7 +1578,7 @@ async function cloudSave(){
     if(!art)throw {code:"not_granted"};
     const payload=buildCloudPayload();
     const html=pageSource(payload);
-    sessionStorage.setItem("aeo-cloud-msg","已儲存到雲端（"+fmt(payload.saved)+"）。勾選、筆記與附圖已跟著本頁保存。");
+    sessionStorage.setItem("aeo-cloud-msg","已儲存到雲端（"+fmt(payload.saved)+"）。勾選、備註與附圖已跟著本頁保存。");
     sessionStorage.setItem("aeo-scroll",String(window.scrollY||0));
     try{localStorage.removeItem(DIRTYKEY)}catch(e){}
     await withTimeout(art.publish(html),60000);
