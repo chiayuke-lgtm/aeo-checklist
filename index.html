@@ -525,7 +525,7 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="v18";
+const BUILD="v19";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="aeo-checklist-v2";
@@ -1039,10 +1039,12 @@ let pgTimer=null;
 function repaginate(){
   const de=document.documentElement;
   if(de.classList.contains("pmode")){try{paginate()}catch(e){} return;}
+  const sx=window.scrollX||0, sy=window.scrollY||0;
   de.classList.add("pmode");
   updatePrintMeta();
   try{paginate()}catch(e){}
   de.classList.remove("pmode");
+  window.scrollTo(sx,sy);
 }
 function schedulePaginate(){clearTimeout(pgTimer); pgTimer=setTimeout(repaginate,300);}
 // ===== 自製 PDF 輸出（不依賴瀏覽器列印排版，圖片絕不跨頁） =====
