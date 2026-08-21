@@ -148,6 +148,7 @@ label.row:hover{background:var(--accent-soft)}
   padding:8px 10px; margin-bottom:4px; resize:vertical; outline:0; box-sizing:border-box;
 }
 .noterow{margin-bottom:10px}
+.wspace{display:none}
 .thumbs{display:flex; flex-wrap:wrap; gap:10px; margin:0 6px 0 48px}
 .thumbs:empty{display:none}
 .thumb{position:relative; margin-bottom:10px}
@@ -212,6 +213,7 @@ html.pmode .thumb{display:block; margin:0 0 8px}
 html.pmode .thumb img{max-height:200px; max-width:320px}
 html.pmode label.row{display:block; position:relative; padding:10px 6px 10px 34px}
 html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
+html.pmode .wspace{display:block; height:16mm; margin:1mm 6px 4mm 34px; border:1px dashed #AAB2B8; border-radius:4px}
 @media print{
   .toolbar,nav.side,.profilebar,.nameform,.cloudline,.addrow,#totop,.notebtn,.notearea,.noterow,.thumb .imgdel,#toast{display:none}
   body{background:#fff; color:#000}
@@ -227,6 +229,7 @@ html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
     break-inside:avoid; page-break-inside:avoid;
   }
   .box{position:absolute; left:6px; top:13px; margin-top:0}
+  .wspace{display:block; height:16mm; margin:1mm 6px 4mm 34px; border:1px dashed #AAB2B8; border-radius:4px; break-inside:avoid; page-break-inside:avoid}
   .note,.notewrap{break-inside:avoid; page-break-inside:avoid}
   .sec h3{break-after:avoid; page-break-after:avoid}
   .ch-head{break-after:avoid; page-break-after:avoid}
@@ -291,6 +294,7 @@ html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
   <div class="chips" role="group" aria-label="篩選">
     <button class="chip" data-f="all" aria-pressed="true">全部</button>
     <button class="chip" data-f="todo" aria-pressed="false">未完成</button>
+    <button class="chip" id="specialtoggle" aria-pressed="true" title="顯示／隱藏特殊項目（4.7 海運運輸業附加措施）；隱藏時不會顯示也不會列印">特殊項目</button>
   </div>
   <button class="btn" id="copybtn">複製全文</button>
   <button class="btn" id="pdfbtn">輸出 PDF</button>
@@ -337,218 +341,132 @@ html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
 const DATA=[
 {id:"1",badge:"第一章",title:"管理組織",sections:[
  {code:"1.1",title:"成立供應鏈安全管理組織",items:[
-  {t:"已成立實施優質企業計畫之供應鏈安全管理組織",p:"文審：簡述 AEO 申請歷程，重點是高層參與及程序書定義組織｜實地：確定高層都支持、參與"},
-  {t:"佐證 1.1.0.0：安全手冊中有關管理組織章節（部分資料即可）",p:null},
-  {t:"佐證：組織圖【包含人員單位職稱姓名】",p:null},
-  {t:"佐證：啟始會議照片、簽到簿",p:null},
+  {t:"已成立實施優質企業計畫之供應鏈安全管理組織",p:"實地：確定高層都支持、參與"},
  ]},
  {code:"1.2",title:"高層管理人之監督",items:[
-  {t:"由高層管理人負責監督優質企業計畫之執行（組織架構圖須有公司人員姓名）",p:"文審：詢問管理代表之產生方式與參與程度｜實地：管理代表確實參與｜高層係指有決策權或明確獲得決策者授權的人"},
-  {t:"佐證 1.2.0.0：組織圖【包含人員單位職稱姓名】",p:null},
+  {t:"由高層管理人負責監督優質企業計畫之執行（組織架構圖須有公司人員姓名）",p:"實地：管理代表確實參與；高層係指有決策權或明確獲得決策者授權的人"},
  ]},
  {code:"1.3",title:"稽核單位與內部稽核",items:[
   {t:"已成立稽核單位負責執行稽核相關供應鏈安全措施與程序作業",p:"實地：驗證是否確實執行內稽，實際詢問受稽單位，亦得請稽核員再執行稽核"},
-  {t:"稽核員受過訓練（至少內部自我上課講義）並執行交叉稽核；所有單位皆應受稽",p:null},
-  {t:"佐證 1.3.0.0：內部稽核作業要點（程序書）",p:null},
-  {t:"佐證：內稽人員組織表（可略）",p:null},
-  {t:"佐證：內稽人員證書或內部上課資料（照片、簽到表、講義）或內稽行前會議",p:null},
-  {t:"佐證：內稽計畫表",p:null},
-  {t:"佐證：內稽查檢表（最好有查核重點）",p:null},
-  {t:"佐證：商夥管理程序書（外稽部分）、商業夥伴查檢表",p:null},
+  {t:"稽核員受過訓練（至少內部自我上課講義）並執行<b>交叉稽核</b>；所有單位皆應受稽",p:null},
  ]},
  {code:"1.4",title:"法規瞭解與宣導",items:[
-  {t:"管理組織瞭解供應鏈安全相關法規並適當宣導（辦公室宣導措施；內部訓練檢附課程表、上課照片、簽到單及講義）",p:"文審：宣導會議、mail、公布欄文宣皆可呈現｜實地：看現場宣導資料張貼狀況、可抽問同仁；儘量不與第 3 組教育訓練重複"},
-  {t:"佐證 1.4.0.0：照片（宣導標語、法規宣導會議及簽到單）",p:null},
-  {t:"佐證：啟始會議照片、簽到簿（若啟始會議無法規宣導，不用放）",p:null},
+  {t:"管理組織瞭解供應鏈安全相關法規並適當宣導（辦公室宣導措施、內部訓練）",p:"實地：看現場宣導資料張貼狀況、可抽問同仁；儘量不與第 3 組教育訓練重複"},
  ]}]},
 {id:"2",badge:"第二章",title:"諮商、合作與聯繫",sections:[
  {code:"2.1",title:"配置供應鏈安全專責人員",items:[
-  {t:"指定<b>二名以上</b>經海關或其認可機構供應鏈安全訓練合格之員工，負責供應鏈安全有關作業",p:"敘述確有幾位專責人員；至少 2 位有證書"},
-  {t:"佐證 2.1.0.0：供應鏈安全專責人員證書正本",p:null},
+  {t:"指定<b>二名以上</b>經海關或其認可機構供應鏈安全訓練合格之員工，負責供應鏈安全有關作業",p:"至少 2 位有證書"},
  ]},
  {code:"2.2",title:"指定關務聯絡與諮商窗口",items:[
-  {t:"配置明確且隨時可聯繫之聯絡窗口，以利海關聯絡及諮商",p:"敘述 1 位以上聯絡窗口單位職稱姓名及聯絡方式；窗口宜有專責人員證書"},
-  {t:"佐證 2.2.0.0：窗口名單與聯絡方式",p:null},
+  {t:"配置明確且隨時可聯繫之聯絡窗口，以利海關聯絡及諮商",p:"窗口宜有專責人員證書"},
  ]}]},
 {id:"3",badge:"第三章",title:"實體與場所安全",sections:[
  {code:"3.1.1",title:"建築物之安全（建材與產權）",items:[
-  {t:"建築物以足堪防止非法侵入之建材建造",p:"文審：建物是否牢固建材、非自有者訂有租約｜同一統編項下所有使用中之建物皆應納入"},
-  {t:"佐證 3.1.1.0：所有使用房舍之權狀或使用執照（租賃者契約未到期）",p:null},
-  {t:"佐證：非自有房屋者之租賃文件",p:null},
-  {t:"佐證：建物外觀照片",p:null},
+  {t:"建築物以足堪防止非法侵入之建材建造；使用執照正本、如為租賃契約未到期",p:"實地：建物是否牢固；同一統編項下所有使用中之房舍皆應納入"},
  ]},
  {code:"3.1.2",title:"建築物結構之定期檢查維修（含公安、消防）",items:[
-  {t:"建築物結構定期檢查及維修並作成紀錄",p:"文審：最好是建管「建築物公共安全檢查申報」；放寬為自我檢查者，程序書須建立定期檢查機制｜實地：檢視自我檢查表內容、巡視整體空間"},
-  {t:"佐證 3.1.2.0：建築物公共安全（防火避難設施與設備）檢查申報<b>結果通知書</b>或程序書（自我檢查部分）",p:null},
-  {t:"佐證：自我檢查表；無建管申報者需程序書＋自我檢查表＋定期維修紀錄",p:null},
-  {t:"佐證：消防安全設備檢修申報書（表）及<b>受理單</b>（不能只有申報單）或合格書函（每年）",p:null},
+  {t:"建築物結構定期檢查及維修並作成紀錄，以確保其完整性",p:"實地：檢視自我檢查表內容、巡視整體空間"},
   {t:"查消防器材是否過期、逃生門（梯）是否通暢",p:null},
-  {t:"佐證：電梯、發電機等設施保養紀錄（可略）",p:null},
  ]},
  {code:"3.2.1",title:"貨物處理區及儲存設施外圍之隔離（B、H、A、S 不適用）",items:[
-  {t:"貨物處理區（原物料、半成品及成品之加工、組合、包裝區域）及儲存設施外圍以適當隔離物圍住",p:"文審：報關、承攬業者只有辦公室者本項寫明無，但要求商業夥伴注意供應鏈安全；廠房、集散站應敘明隔離措施，重點是「外圍」"},
-  {t:"佐證 3.2.1.0：商業夥伴聲明書（報關、承攬業者僅提供此佐證即可）",p:null},
-  {t:"佐證：外圍隔離物照片",p:null},
+  {t:"貨物處理區（原物料、半成品及成品之加工、組合、包裝區域）及儲存設施之外圍以適當隔離物圍住",p:"實地：檢視現況"},
  ]},
  {code:"3.2.2",title:"區分原物料、成品及危險物品",items:[
-  {t:"使用隔離物區分原物料、成品及危險物品，材質堅固、不混置",p:"避免混置、成品被置入危安物品；成品區是待出貨貨物，最好有完善保護與控管"},
-  {t:"佐證 3.2.2.0：隔離狀況照片",p:null},
+  {t:"使用隔離物區分原物料、成品及危險物品；材質堅固、不混置",p:"成品區是待出貨貨物，最好有完善保護與控管"},
  ]},
  {code:"3.2.3",title:"隔離物之定期檢查及維修",items:[
-  {t:"所有隔離物定期檢查及維修並作成紀錄，由專責單位辦理",p:"隔離物維護程序及紀錄應詳實"},
-  {t:"佐證 3.2.3.0：定期檢查程序規範、定期檢查紀錄",p:null},
-  {t:"佐證：照片（最好有）、維修紀錄",p:null},
+  {t:"所有隔離物由專責單位定期檢查及維修並作成紀錄",p:null},
  ]},
  {code:"3.3",title:"管制區域之劃分",items:[
-  {t:"管制區域清楚劃分、易於管理；該管制的區域皆已納入",p:"文審：一般企業應有辦公管制區，並以機房（機櫃）及檔案室為重點管制區（CCTV 及門禁）；廠房通常自廠區入口大門即開始管制｜詳細管控措施寫在 4.2.1.2 避免贅述"},
+  {t:"管制區域清楚劃分、易於管理；該管制的區域皆已納入",p:"實地：管制區是否設置得宜；實體看起來凌亂，得以此基準要求改善"},
   {t:"重要出入處設有監視器；辦公室內文件檔案室、機房列為管制區並有監視器",p:null},
   {t:"查驗檔案室進出登記表、電腦機房進出紀錄表、訪客人員登記簿等出入管控文件",p:null},
-  {t:"佐證 3.3.0.0：平面圖（區分一般區與管制區）",p:null},
-  {t:"佐證：各管制區照片（含標語）",p:null},
  ]},
  {code:"3.4",title:"鎖鑰管理",items:[
-  {t:"內外窗戶、圍籬或大門均可上鎖或以符合安全之替代方法管理，鑰匙領用由管理或保全人員控管",p:"文審：主要出入口以刷卡門禁機替代者得略述｜實地：由每天誰開、關門查起；集中保管者注意借用歸還時間不宜過長，可用借用登記表紀錄比對 CCTV 影像查核"},
-  {t:"佐證 3.4.0.0：鎖鑰管理辦法",p:null},
-  {t:"佐證：鑰匙清冊／領用清冊（含發交領用保管人員）",p:null},
-  {t:"佐證：鑰匙借用登記表；定期清查（盤點）鑰匙之紀錄",p:null},
-  {t:"佐證：集中保管鑰匙箱照片（如果有）",p:null},
+  {t:"內外窗戶、圍籬或大門均可上鎖或以符合安全之替代方法管理，鑰匙領用由管理或保全人員控管",p:"實地：由每天誰開、關門查起；集中保管者注意借用歸還時間不宜過長，可用借用登記表紀錄比對 CCTV 影像查核"},
+  {t:"鑰匙管理清表、領用清表、借用登記表齊備；定期清查（盤點）鑰匙並有紀錄",p:null},
  ]},
  {code:"3.5",title:"照明設備",items:[
   {t:"出入口、貨物處理與存放區、圍籬及停車區等內外設施有適當照明（一般照明、緊急照明、夜間照明〔如有夜班〕）",p:null},
   {t:"緊急逃生指示燈保持明亮",p:null},
-  {t:"佐證 3.5.0.0：各種照明照片",p:null},
  ]},
  {code:"3.6",title:"防盜或監視系統之設置",items:[
-  {t:"利用警報系統或錄影監視器監視可能被入侵之建築物及場域，防止未經許可人員進出貨物處理及倉儲區域",p:"文審：CCTV 請量化；大樓管委會 CCTV 亦得寫入；防盜系統（如與保全簽約）亦於本節敘述"},
-  {t:"監視器數量足夠、設置點恰當、畫面清晰，影像保存 <b>30 天以上</b>",p:"實地：調閱 30 天前訪客登記簿、機房登記表等紀錄查對；確認夜間影像清晰（看得清楚車牌）"},
-  {t:"定期檢視防盜或監視系統並有檢查紀錄表（如每週 1 次）",p:null},
-  {t:"佐證 3.6.0.0：CCTV 配置圖（平面圖）",p:null},
-  {t:"佐證：各監視器影像照片（含日間及夜視）、辦公大樓監視器照片",p:null},
-  {t:"佐證：防盜設施照片／契約書（如果有）",p:null},
+  {t:"監視器數量足夠、設置點恰當、畫面清晰，影像保存 <b>30 天以上</b>",p:"實地：調閱 30 天前訪客登記簿、機房登記表等紀錄查對是否依程序辦理；確認夜間影像清晰（看得清楚車牌）"},
+  {t:"定期檢視防盜或監視系統並有檢查紀錄（如每週 1 次）",p:null},
  ]},
  {code:"3.7",title:"保全人員之配置",items:[
-  {t:"配置員工或外聘保全公司負責保全工作；大門出入口配置適當之保全人員",p:"文審：敘述保全工作由誰負責與執勤狀況｜實地：保全是否熟悉管制規定、人員與貨物放行作業、訪客及員工沒帶證件如何處理、緊急應變處置"},
+  {t:"大門出入口配置適當之保全人員（員工或外聘保全公司）",p:"實地：保全是否熟悉各項管制規定、如何執行人員與貨物放行、訪客及員工沒帶證件如何處理、緊急應變處置"},
   {t:"查核保全合約書正本，確定契約期限",p:null},
-  {t:"佐證 3.7.0.0：保全人員照片（員工擔任、外聘）",p:null},
-  {t:"佐證：外聘契約書（如果有）",p:null},
-  {t:"佐證：值班巡視表（班表）、巡視照片等保全人員工作內容",p:null},
  ]}]},
 {id:"4",badge:"第四章",title:"出入管控",sections:[
  {code:"4.1.1",title:"出入大門之車輛與人員管控",items:[
-  {t:"對出入大門之車輛或人員均有適當管控",p:"文審：略述人員及車輛皆依規定管制，實際措施於後面章節詳敘｜實地：注意各出入口管控措施是否確實可行"},
-  {t:"佐證 4.1.1.0：門禁管理辦法、車輛管理辦法等相關程序書",p:null},
-  {t:"佐證：訪客／車輛登記表、照片",p:null},
+  {t:"對出入大門之車輛或人員均有適當管控",p:"實地：注意各出入口之管控措施是否確實可行"},
  ]},
  {code:"4.1.2",title:"門哨數量",items:[
-  {t:"門哨維持在最低必要數量，確保適當之進出管控及安全",p:"文審：出入口越少越好，寫明共有幾個出入口｜實地：查核是否有未受管制之出入口"},
-  {t:"佐證 4.1.2.0：單一出入口照片",p:null},
+  {t:"門哨維持在最低必要數量，確保適當之進出管控及安全",p:"實地：查核是否有未受管制之出入口"},
  ]},
  {code:"4.2.1.1",title:"員工身分識別制度",items:[
-  {t:"建立員工身分辨識制度，落實身分辨識及進出管控",p:"文審：識別證制度程序書（領用、繳回、遺失規範）敘述核發流程與收回機制；佐證照片中所有人員一定要佩戴識別證"},
-  {t:"員工識別證忘記帶、遺失、損壞或門禁卡失效之處理方式已敘明（臨時識別機制）",p:"實地：識別證忘記帶如何進入管制區、有無臨時識別機制"},
-  {t:"佐證 4.2.1.1：識別證制度規範程序書",p:null},
-  {t:"佐證：識別證核發紀錄（4.2.1.3 也有）",p:null},
-  {t:"佐證：員工識別證照片",p:null},
-  {t:"佐證：員工臨時證／臨時證借用登記表、臨時證申請紀錄（申領與繳回）",p:null},
+  {t:"建立員工身分辨識制度，落實身分辨識及進出管控",p:"實地：識別證領用、繳回作業如何進行；忘記帶如何進入管制區、有無臨時識別機制"},
+  {t:"員工識別證忘記帶、遺失、損壞或門禁卡失效之處理方式已敘明",p:null},
  ]},
  {code:"4.2.1.2",title:"依許可範圍進入工作區域（機房、檔案室等重點管制區）",items:[
-  {t:"員工依照許可範圍進入其工作區域",p:"文審：所有員工進出管制區、重點管制區的管控措施（門禁卡、如何進出檔案室機房）皆在此節詳述｜實地：觀察平時進出狀況、利用 CCTV 查對管制情形"},
-  {t:"佐證 4.2.1.2：安全管理手冊、門禁管理辦法（門禁卡部分）等程序書",p:null},
-  {t:"佐證：門禁照片（管制區及重點管制區）",p:null},
-  {t:"佐證：員工進出辦公室、借閱文件、進出機房照片",p:null},
-  {t:"佐證：機房進出登記表",p:null},
-  {t:"佐證：文件管控登記表",p:null},
+  {t:"員工依照許可範圍進入其工作區域",p:"實地：觀察員工平時進出狀況，利用 CCTV 查對各管制區及重點管制區之管制情形"},
  ]},
  {code:"4.2.1.3",title:"進出裝置之核發、收回及更換",items:[
-  {t:"訂有核發、收回及更換進出裝置（識別證、鑰匙、門禁卡等）之程序及文件紀錄",p:"含設備檢修、遺失處理、回收機制；鑰匙控管與 3.4 重複可略述；門禁卡與識別證重疊可簡述"},
-  {t:"佐證 4.2.1.3：進出裝置核發程序書及核發、收回、更換紀錄（可能包括鎖鑰、識別證、門禁卡管控程序及鑰匙清冊、門禁卡清冊、離職交接單等）",p:null},
+  {t:"訂有核發、收回及更換進出裝置（識別證、鑰匙、門禁卡等）之程序及文件紀錄",p:null},
  ]},
  {code:"4.2.2.1",title:"訪客身分證明與登記",items:[
-  {t:"訪客（包含供應商）抵達時提供附有照片之身分證明以供登記",p:"文審：兩要件——「有照片之證件」與「登記」；證件留置與否各公司自訂｜實地：抽查 30 天內訪客紀錄佐以 CCTV；詢問「訪客未帶證件」如何處理"},
-  {t:"佐證 4.2.2.1：程序書（如門禁管理辦法）相關部分",p:null},
-  {t:"佐證：訪客登記簿",p:null},
-  {t:"佐證：訪客出示證件及登記照片",p:null},
+  {t:"訪客（包含供應商）抵達時提供附有照片之身分證明，以供登記",p:"實地：詢問現場實際作法，從訪客登記簿抽查 30 天內紀錄並佐以 CCTV 檢視；詢問「訪客未帶證件」如何處理"},
  ]},
  {code:"4.2.2.2",title:"訪客陪同與臨時識別證",items:[
-  {t:"所有訪客皆由員工全程陪同，並佩戴明顯之臨時識別證",p:"進出頻繁合作夥伴、清潔維修人員、團體訪客等，風險評估沒問題下可先行造冊、核發特別識別證，進出僅須登記"},
-  {t:"佐證 4.2.2.2：程序書（如門禁管理辦法）相關部分",p:null},
-  {t:"佐證：訪客證",p:null},
-  {t:"佐證：員工全程陪同訪客（佩戴明顯臨時識別證）照片",p:null},
-  {t:"佐證：如有其他管理方式，其相關資料",p:null},
+  {t:"所有訪客皆由員工全程陪同，並佩戴明顯之臨時識別證",p:"進出頻繁合作夥伴、清潔維修人員、團體訪客等，風險評估無虞可先造冊、核發特別識別證，進出僅須登記"},
  ]},
  {code:"4.2.2.3",title:"交貨（送貨）人員身分確認",items:[
-  {t:"對交貨人員之身分有確認機制",p:"文審：一般交貨人員由同仁於非管制區（如櫃台）接洽點交即可；廠區貨車進出之登錄檢視應另做規劃；運送重物須進入管制區時由接洽同仁全程陪同"},
-  {t:"佐證 4.2.2.3：程序書（如門禁管理辦法）相關部分",p:null},
-  {t:"佐證：送貨人員於管制區外點交照片",p:null},
-  {t:"佐證：廠區貨車出入相關管控程序、照片（包括車輛檢查）",p:null},
+  {t:"對交貨人員之身分有確認機制",p:"一般交貨人員由同仁於非管制區（如櫃台）接洽點交；廠區貨車進出之登錄檢視另做妥適規劃"},
  ]},
  {code:"4.3",title:"收件檢查機制（含郵件）",items:[
-  {t:"送達之包裹及信件在分送之前作檢查",p:"文審：涵蓋「人員訓練」、「區域隔離」（如果可以最佳）與「實施必要檢查」，輔以收發檢查登記表｜實地：稽核收發人員對包裹及信件之檢查（金屬探測器、課程訓練講義）"},
-  {t:"佐證 4.3.0.0：程序書（如實體安全管理手冊）相關部分",p:null},
-  {t:"佐證：收發檢查登記表",p:null},
-  {t:"佐證：檢查中照片",p:null},
+  {t:"送達之包裹及信件在分送之前作檢查",p:"實地：稽核收發人員對包裹及信件之登記紀錄、檢查與後送流程"},
  ]},
  {code:"4.4",title:"車輛停放管理（B、A、S 不適用）",items:[
-  {t:"停放於管制區域內之車輛限停放指定區域或區位",p:"文審：管制區內有停車位者須詳述設置那些停車區間、如何管控｜實地：驗證員工、訪客、快遞收送員、卡車司機、拖車司機等出入管控與停放情形｜停車區應儘量不要規劃在倉庫旁邊"},
-  {t:"佐證 4.4.0.0：管理辦法（如果有）",p:null},
-  {t:"佐證：平面圖（停車場停車格配置圖）、照片",p:null},
-  {t:"佐證：崗哨及停車場監視系統照片、停車證照片／使用照片（如果有）",p:null},
+  {t:"停放於管制區域內之車輛限停放指定區域或區位",p:"實地：驗證員工、訪客、快遞收送員、卡車司機、拖車司機等之出入管控與車輛停放情形；停車區儘量不要規劃在倉庫旁邊"},
  ]},
  {code:"4.5",title:"可疑人士之通報",items:[
-  {t:"對未經授權進入工作場所及非法侵入事件訂有通報之程序",p:"可擷取第 3 組第 12 章安全訓練與威脅認知、第 13 章事故預防及處理之作業程序及表單部分資料呈現"},
+  {t:"對未經授權進入工作場所及非法侵入事件訂有通報之程序",p:null},
   {t:"可疑人士通報流程：對不明人士盤查及通報主管，必要時通知警察機關",p:null},
   {t:"設有緊急應變組織、緊急聯絡通訊錄（置於明顯處，如管理室桌面）",p:null},
-  {t:"佐證 4.5.0.0：程序書、可疑人士通報流程",p:null},
-  {t:"佐證：可疑人事物通報紀錄表、通報電話表",p:null},
  ]},
  {code:"4.6",title:"盤查及驅離未經許可人員之程序",items:[
-  {t:"建立程序以辨識、盤查及處理未經許可或身分不明人員之進入",p:"上節是通報，本節是辨識、盤查及處理｜實地：協調第 3 組確認事故演練狀況（事故演練應包括不明人士處理）"},
-  {t:"相關教育訓練之紀錄已備",p:null},
-  {t:"佐證 4.6.0.0：程序書",p:null},
-  {t:"佐證：通報電話表（貼在保證可見之明顯處）",p:null},
+  {t:"建立程序以辨識、盤查及處理未經許可或身分不明人員之進入，並有相關教育訓練紀錄",p:"實地：協調第 3 組確認事故演練狀況（事故演練應包括不明人士處理）"},
  ]},
- {code:"4.7",title:"海運運輸業者附加之進出實體管控措施（僅海運運輸業適用）",items:[
+ {code:"4.7",title:"海運運輸業者附加之進出實體管控措施（僅海運運輸業適用）",special:true,items:[
   {t:"訂有管控員工及訪客進出之程序，防止未經許可人員進入船舶與貨物有關設施，並保護公司資產",p:null},
   {t:"所有管制進出之入口處能確實辨識員工、訪客、服務業者、政府官員及廠商之身分",p:null},
-  {t:"岸邊員工及服務業者僅限進出其進行合法商業活動之船舶範圍；船舶及設施之進出管控依「國際船舶與港口設施安全章程」（ISPS）及海運運輸安全法令管理",p:null},
+  {t:"岸邊員工及服務業者僅限進出其進行合法商業活動之船舶範圍；船舶及設施之進出管控依「國際船舶與港口設施安全章程」（ISPS）及海運運輸安全有關法令管理",p:null},
   {t:"依 ISPS 安全方案，對所有船員、員工、供應商及訪客於登船或下船時均予以搜查",p:null},
   {t:"依船舶安全要求備有船舶訪客日誌，並核發臨時訪客證",p:null},
-  {t:"全體船員、員工、供應商及訪客（包括政府官員）依 ISPS 及海運運輸安全法令佩戴可供識別之身分證明",p:null},
+  {t:"全體船員、員工、供應商及訪客（包括政府官員）依 ISPS 及海運運輸安全有關法令佩戴可供識別之身分證明",p:null},
  ]}]},
 {id:"5",badge:"第五章",title:"員工安全",sections:[
  {code:"5.1",title:"備有員工名單",items:[
-  {t:"備有員工名單以利內部及政府單位查核（可線上即時查閱）",p:"文審：多統編同時申請者名單應妥為區分；場所內其他公司人員亦應納入 AEO 管理制度｜實地：調閱電腦名冊查證現場上班人員；不在場人員可憑名冊電話 call out 查證"},
-  {t:"佐證 5.1.0.0：人事管理作業程序",p:null},
-  {t:"佐證：人事資料系統之電腦擷取畫面",p:null},
-  {t:"佐證：員工基本資料卡",p:null},
+  {t:"備有員工名單，以利內部及政府單位查核（可線上即時查閱）",p:"實地：調閱電腦名冊查證現場上班人員是否符合；不在場人員可憑名冊電話 call out 查證"},
  ]},
  {code:"5.2",title:"雇用員工前履歷之查核",items:[
-  {t:"雇用員工前具備預先審查履歷資料之機制（如工作經歷及推薦函）",p:"文審：依人事管理辦法敘述任用時履歷查核程序｜實地：查證任用流程（可從名單抽查任一人之查核資料）"},
-  {t:"佐證 5.2.0.0：程序書",p:null},
-  {t:"佐證：面試評估與履歷表",p:null},
-  {t:"佐證：履歷查證紀錄（如果有）",p:null},
+  {t:"雇用員工前具備預先審查履歷資料之機制（如工作經歷及推薦函）",p:"實地：查證任用流程（可從名單抽查任一人之查核資料）"},
  ]},
  {code:"5.3",title:"調查所雇用員工之背景資料",items:[
-  {t:"視工作項目敏感程度，在不違反法令保護人民權利前提下，具備適當之背景調查機制",p:"文審：務必區分敏感性員工職位（機密、財務、研發等）及任用管理特別措施｜實地：查證切結書皆已簽署；建議不以特種個資（如良民證）作為任用參考"},
+  {t:"視工作項目敏感程度，在不違反法令保護人民權利前提下，具備適當之背景調查機制",p:"實地：查證切結書（員工信用調查同意書）皆已簽署；建議不以特種個資（如良民證）作為任用參考"},
   {t:"依員工工作敏感程度建立勞動契約書、員工保證書、資訊安全保密協定書等文件查核機制",p:null},
-  {t:"佐證 5.3.0.0：程序書",p:null},
-  {t:"佐證：切結書（建議「員工信用調查同意書」）",p:null},
  ]},
  {code:"5.4",title:"現職員工之定期調查",items:[
-  {t:"對從事敏感性工作或社交活動、財務狀況異常之員工具有定期調查機制",p:"文審：敘述相關程序，包括異常狀況發現之處理（不定期）｜實地：檢視考核表"},
-  {t:"查驗員工考評報告表（員工出勤狀況／每年）、異常狀況記錄表（如法院欠款通知書）等正本文件",p:null},
-  {t:"佐證 5.4.0.0：程序書",p:null},
-  {t:"佐證：有關考評表或訪談紀錄表",p:null},
+  {t:"對從事敏感性工作或社交活動、財務狀況異常之員工具有定期調查機制",p:"實地：檢視考核表；查驗員工考評報告表（出勤狀況／每年）、異常狀況記錄表等正本文件"},
  ]},
  {code:"5.5",title:"離職或調職員工權限之移除或變更",items:[
-  {t:"對離職或調職員工具有適當程序，移除或變更其身分、設備及系統使用權限",p:"文審：離、調職程序說明｜實地：調閱一份離職申請單，查核人事離職紀錄、電腦、門禁權限取消紀錄（移除畫面）"},
+  {t:"對離職或調職員工具有適當程序，移除或變更其身分、設備及系統之使用權限",p:"實地：調閱一份離職申請單，查核其人事離職紀錄、電腦、門禁權限取消紀錄"},
   {t:"查驗離職移交手續單正本：識別證註銷、人事系統顯示離職狀態、電腦帳號與權限移除等均已辦妥",p:null},
-  {t:"佐證 5.5.0.0：程序書",p:null},
-  {t:"佐證：離職申請單（宜分清楚各權責單位交接事項，避免遺漏）",p:null},
  ]}]},
 ];
 
-const BUILD="fv1";
+const BUILD="fv2";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="fv-checklist-v1";
@@ -591,6 +509,7 @@ function mergeCloud(payload){
       items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
     });
   }
+  if(payload.db.edits)db.edits=Object.assign({},payload.db.edits,db.edits||{});
 }
 function loadDb(){
   let hadLocal=true;
@@ -615,6 +534,7 @@ function loadDb(){
   }
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   if(!db.custom)db.custom={};
+  if(!db.edits)db.edits={};
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
   save();
 }
@@ -684,13 +604,16 @@ const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const main=document.getElementById("main");
 const nav=document.getElementById("sidenav");
 let filter="all", query="";
+let showSpecial=true;
+try{showSpecial=localStorage.getItem("fv-special")!=="0"}catch(e){}
 
 function makeItem(it,id,secText,custom){
   const li=document.createElement("li");
   li.className="item"+(custom?" custom":""); li.dataset.id=id;
   li.dataset.hot=it.hot?"1":"0";
-  li.dataset.text=(secText+" "+it.t+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
-  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${it.t}</span>${custom?'<span class="cbadge">補充</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 備註</button><button class="notebtn imgbtn" type="button">🖼 附圖</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
+  const shownT=(!custom&&db.edits&&db.edits[id])?esc(db.edits[id]):it.t;
+  li.dataset.text=(secText+" "+shownT+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${shownT}</span>${custom?'<span class="cbadge">補充</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 備註</button><button class="notebtn imgbtn" type="button">🖼 附圖</button><button class="notebtn editbtn" type="button">✏️ 修改</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div><div class="wspace"></div>`;
   li.querySelector("input").addEventListener("change",e=>{
     if(e.target.checked)cur().state[id]=true; else delete cur().state[id];
     cur().updated=Date.now();
@@ -705,6 +628,43 @@ function makeItem(it,id,secText,custom){
   li.querySelector(".imgbtn").addEventListener("click",e=>{
     e.preventDefault(); e.stopPropagation();
     pendingLi=li; imgPick.value=""; imgPick.click();
+  });
+  li.querySelector(".editbtn").addEventListener("click",e=>{
+    e.preventDefault(); e.stopPropagation();
+    const wrap=li.querySelector(".notewrap");
+    if(wrap.dataset.editing==="t"){wrap.dataset.editing=""; renderNote(li); return;}
+    wrap.dataset.editing="t";
+    let curTxt;
+    if(custom){
+      let found="";
+      Object.values(db.custom||{}).forEach(arr=>{const x=arr.find(x=>x.id===id); if(x)found=x.t});
+      curTxt=found;
+    }else{
+      curTxt=(db.edits&&db.edits[id])||it.t.replace(/<[^>]+>/g,"");
+    }
+    wrap.innerHTML=`<textarea class="notearea" placeholder="修改此項目內容${custom?"":"；清空後儲存＝還原為原始內容"}">${esc(curTxt)}</textarea><div class="noterow"><button class="btn editsave" type="button">儲存</button> <button class="btn editcancel" type="button">取消</button></div>`;
+    const ta=wrap.querySelector("textarea");
+    ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+    wrap.querySelector(".editsave").addEventListener("click",()=>{
+      const v=ta.value.trim();
+      wrap.dataset.editing="";
+      if(custom){
+        if(v){Object.values(db.custom||{}).forEach(arr=>{const x=arr.find(x=>x.id===id); if(x)x.t=v})}
+        save(); renderCustom(); applyState(); refresh();
+        return;
+      }
+      if(!db.edits)db.edits={};
+      const orig=it.t.replace(/<[^>]+>/g,"");
+      if(!v||v===orig)delete db.edits[id]; else db.edits[id]=v;
+      save();
+      const tEl=li.querySelector(".t");
+      tEl.innerHTML=db.edits[id]?esc(db.edits[id]):it.t;
+      li.dataset.text=(secText+" "+tEl.textContent+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+      renderNote(li); refresh();
+    });
+    wrap.querySelector(".editcancel").addEventListener("click",()=>{
+      wrap.dataset.editing=""; renderNote(li);
+    });
   });
   if(custom){
     const del=li.querySelector(".customdel");
@@ -744,6 +704,20 @@ function renderCustom(){
     });
   });
 }
+function applyEdits(){
+  document.querySelectorAll("li.item:not(.custom)").forEach(li=>{
+    const id=li.dataset.id;
+    const parts=id.split(".");
+    const ch=DATA.find(x=>x.id===parts[0]);
+    const it=ch&&ch.sections[+parts[1]]&&ch.sections[+parts[1]].items[+parts[2]];
+    if(!it)return;
+    const tEl=li.querySelector(".t");
+    const want=(db.edits&&db.edits[id])?esc(db.edits[id]):it.t;
+    tEl.innerHTML=want;
+    const sect=li.closest("ul.items");
+    li.dataset.text=((sect?sect.dataset.sectext:"")+" "+tEl.textContent+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+  });
+}
 function build(){
   const frag=document.createDocumentFragment();
   DATA.forEach(ch=>{
@@ -754,6 +728,7 @@ function build(){
     sec.innerHTML=h;
     ch.sections.forEach((s,si)=>{
       const div=document.createElement("div"); div.className="sec";
+      if(s.special)div.dataset.special="1";
       if(s.title)div.innerHTML=`<h3>${s.code?`<span class="code">${s.code}</span>`:""}${s.title}</h3>`;
       const ul=document.createElement("ul"); ul.className="items";
       const secText=s.code+" "+s.title;
@@ -799,7 +774,9 @@ function build(){
 
 function filterLabel(){
   const f=filter==="todo"?"未完成項目":filter==="hot"?"高頻缺失項目":"全部項目";
-  return query?`${f}＋搜尋「${query}」`:f;
+  let s=query?`${f}＋搜尋「${query}」`:f;
+  if(!showSpecial)s+="（不含特殊項目）";
+  return s;
 }
 function updatePrintMeta(){
   document.getElementById("printmeta").textContent=
@@ -811,7 +788,9 @@ function refresh(){
     let ct=0, cd=0, chVisible=0;
     document.querySelectorAll(`#ch-${ch.id} .sec`).forEach(secEl=>{
       let secVisible=0;
+      const isSpecial=secEl.dataset.special==="1";
       secEl.querySelectorAll("li.item").forEach(li=>{
+        if(isSpecial&&!showSpecial){li.classList.add("hide");return;}
         const checked=li.querySelector("input").checked;
         ct++; if(checked)cd++;
         const hot=li.dataset.hot==="1";
@@ -840,11 +819,19 @@ function refresh(){
   if(typeof schedulePaginate==="function")schedulePaginate();
 }
 
-document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
+document.querySelectorAll(".chip[data-f]").forEach(c=>c.addEventListener("click",()=>{
   filter=c.dataset.f;
-  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===c?"true":"false"));
+  document.querySelectorAll(".chip[data-f]").forEach(x=>x.setAttribute("aria-pressed",x===c?"true":"false"));
   refresh();
 }));
+const specialToggle=document.getElementById("specialtoggle");
+function updateSpecialUI(){specialToggle.setAttribute("aria-pressed",showSpecial?"true":"false")}
+specialToggle.addEventListener("click",()=>{
+  showSpecial=!showSpecial;
+  try{localStorage.setItem("fv-special",showSpecial?"1":"0")}catch(e){}
+  updateSpecialUI(); refresh();
+});
+updateSpecialUI();
 document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();refresh()});
 function renderNote(li){
   const id=li.dataset.id;
@@ -1032,6 +1019,8 @@ function paginate(){
         const nw=li.querySelector(".notewrap");
         if(nw&&nw.textContent.trim())units.push({el:nw});
         li.querySelectorAll(".thumb").forEach(t=>units.push({el:t}));
+        const ws=li.querySelector(".wspace");
+        if(ws)units.push({el:ws});
       });
     });
   });
@@ -1162,6 +1151,11 @@ function renderPdfPages(){
           g.strokeStyle=LINE; g.lineWidth=1; g.strokeRect(tx,y+4,dw,dh);
           y+=dh+12;
         });
+        const wsH=Math.round(16*S);
+        if(y+wsH+10>H-M)newPage();
+        g.strokeStyle="#AAB2B8"; g.lineWidth=1; g.setLineDash([7,6]);
+        g.strokeRect(tx,y+4,tw-4,wsH); g.setLineDash([]);
+        y+=wsH+12;
         y+=6;
         g.fillStyle=LINE; g.fillRect(M,y,maxW,1); y+=8;
       });
@@ -1467,7 +1461,7 @@ async function syncUp(){
     });
     await supaFetch("/rest/v1/fv_app_state",{
       method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},
-      body:JSON.stringify([{id:"main",data:{custom:db.custom||{}},updated:Date.now()}])
+      body:JSON.stringify([{id:"main",data:{custom:db.custom||{},edits:db.edits||{}},updated:Date.now()}])
     });
     lastSync=Date.now(); syncErr=null;
   }catch(e){
@@ -1496,6 +1490,9 @@ async function syncDown(){
       items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
     });
   }
+  if(st&&st.data&&st.data.edits){
+    db.edits=Object.assign({},db.edits||{},st.data.edits);
+  }
   Object.entries(db.profiles).forEach(([id,p])=>{
     const empty=!p.updated&&!Object.keys(p.state||{}).length&&!Object.keys(p.notes||{}).length&&!Object.keys(p.imgs||{}).length;
     if(empty&&p.name==="預設對象"&&Object.keys(db.profiles).length>1){
@@ -1506,7 +1503,7 @@ async function syncDown(){
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
   save();
-  renderCustom(); renderProfiles(); applyState(); refresh();
+  renderCustom(); applyEdits(); renderProfiles(); applyState(); refresh();
   for(const p of Object.values(db.profiles)){
     for(const k of Object.values(p.imgs||{}).flat()){
       if(imgGet(k)){uploadedImgs.add(k);continue}
@@ -1675,7 +1672,7 @@ function doRestore(text){
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   if(!db.custom)db.custom={};
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
-  save(); renderCustom(); renderProfiles(); applyState(); refresh();
+  save(); renderCustom(); applyEdits(); renderProfiles(); applyState(); refresh();
   restoreForm.hidden=true;
   toast("備份已還原（每個對象取較新的版本合併）。記得按「☁️ 儲存雲端」讓還原後的資料上雲");
 }
