@@ -300,6 +300,7 @@ html.pmode .wspace{display:block; height:16mm; margin:1mm 6px 4mm 34px; border:1
   <button class="btn" id="pdfbtn">輸出 PDF</button>
   <button class="btn" id="printbtn">列印</button>
   <button class="btn" id="resetbtn">重設勾選</button>
+  <button class="btn" id="clearnotesbtn">清除備註附圖</button>
   <button class="btn" id="cloudbtn">☁️ 儲存雲端</button>
   <button class="btn" id="bakbtn">匯出備份</button>
   <button class="btn" id="restorebtn">還原備份</button>
@@ -466,7 +467,7 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="fv2";
+const BUILD="fv3";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="fv-checklist-v1";
@@ -989,6 +990,13 @@ function armButton(btn,idleText,armedText,onConfirm){
 armButton(document.getElementById("resetbtn"),"重設勾選","確定清除此對象的勾選？",()=>{
   cur().state={}; cur().updated=null; save();
   applyState(); renderProfiles(); refresh();
+});
+armButton(document.getElementById("clearnotesbtn"),"清除備註附圖","確定清除此對象的備註與附圖？",()=>{
+  Object.values(cur().imgs||{}).flat().forEach(k=>imgDrop(k));
+  cur().notes={}; cur().imgs={};
+  cur().updated=Date.now(); save();
+  applyState(); renderProfiles(); refresh();
+  toast("已清除此對象的所有備註與附圖（勾選保留）");
 });
 armButton(document.getElementById("delprof"),"刪除","確定刪除此對象？",()=>{
   const deadId=db.current;

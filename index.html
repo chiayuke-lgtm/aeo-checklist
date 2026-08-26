@@ -297,6 +297,7 @@ html.pmode .box{position:absolute; left:6px; top:13px; margin-top:0}
   <button class="btn" id="pdfbtn">輸出 PDF</button>
   <button class="btn" id="printbtn">列印</button>
   <button class="btn" id="resetbtn">重設勾選</button>
+  <button class="btn" id="clearnotesbtn">清除備註附圖</button>
   <button class="btn" id="cloudbtn">☁️ 儲存雲端</button>
   <button class="btn" id="bakbtn">匯出備份</button>
   <button class="btn" id="restorebtn">還原備份</button>
@@ -525,7 +526,7 @@ const DATA=[
  ]}]},
 ];
 
-const BUILD="v20";
+const BUILD="v21";
 // Supabase 雲端同步設定（留空＝停用；anon key 為公開金鑰，安全性由 RLS＋登入把關）
 const SUPA={url:"",anon:""};
 const KEY="aeo-checklist-v2";
@@ -574,6 +575,7 @@ function mergeCloud(payload){
       items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
     });
   }
+  if(payload.db.edits)db.edits=Object.assign({},payload.db.edits,db.edits||{});
 }
 function loadDb(){
   let hadLocal=true;
@@ -598,6 +600,7 @@ function loadDb(){
   }
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   if(!db.custom)db.custom={};
+  if(!db.edits)db.edits={};
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
   save();
 }
@@ -672,8 +675,9 @@ function makeItem(it,id,secText,custom){
   const li=document.createElement("li");
   li.className="item"+(custom?" custom":""); li.dataset.id=id;
   li.dataset.hot=it.hot?"1":"0";
-  li.dataset.text=(secText+" "+it.t+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
-  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${it.t}</span>${custom?'<span class="cbadge">補充</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 備註</button><button class="notebtn imgbtn" type="button">🖼 附圖</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
+  const shownT=(!custom&&db.edits&&db.edits[id])?esc(db.edits[id]):it.t;
+  li.dataset.text=(secText+" "+shownT+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+  li.innerHTML=`<label class="row"><input type="checkbox" aria-label="檢核項目"><span class="box">${CHECK}</span><span class="itxt"><span class="t">${shownT}</span>${custom?'<span class="cbadge">補充</span>':""}${it.hot?'<span class="hot">高頻缺失</span>':""}${it.p?`<span class="pit">${it.p}</span>`:""}</span><button class="notebtn" type="button">✎ 備註</button><button class="notebtn imgbtn" type="button">🖼 附圖</button><button class="notebtn editbtn" type="button">✏️ 修改</button>${custom?'<button class="notebtn customdel" type="button">－ 刪除</button>':""}</label><div class="notewrap"></div><div class="thumbs"></div>`;
   li.querySelector("input").addEventListener("change",e=>{
     if(e.target.checked)cur().state[id]=true; else delete cur().state[id];
     cur().updated=Date.now();
@@ -688,6 +692,43 @@ function makeItem(it,id,secText,custom){
   li.querySelector(".imgbtn").addEventListener("click",e=>{
     e.preventDefault(); e.stopPropagation();
     pendingLi=li; imgPick.value=""; imgPick.click();
+  });
+  li.querySelector(".editbtn").addEventListener("click",e=>{
+    e.preventDefault(); e.stopPropagation();
+    const wrap=li.querySelector(".notewrap");
+    if(wrap.dataset.editing==="t"){wrap.dataset.editing=""; renderNote(li); return;}
+    wrap.dataset.editing="t";
+    let curTxt;
+    if(custom){
+      let found="";
+      Object.values(db.custom||{}).forEach(arr=>{const x=arr.find(x=>x.id===id); if(x)found=x.t});
+      curTxt=found;
+    }else{
+      curTxt=(db.edits&&db.edits[id])||it.t.replace(/<[^>]+>/g,"");
+    }
+    wrap.innerHTML=`<textarea class="notearea" placeholder="修改此項目內容${custom?"":"；清空後儲存＝還原為原始內容"}">${esc(curTxt)}</textarea><div class="noterow"><button class="btn editsave" type="button">儲存</button> <button class="btn editcancel" type="button">取消</button></div>`;
+    const ta=wrap.querySelector("textarea");
+    ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+    wrap.querySelector(".editsave").addEventListener("click",()=>{
+      const v=ta.value.trim();
+      wrap.dataset.editing="";
+      if(custom){
+        if(v){Object.values(db.custom||{}).forEach(arr=>{const x=arr.find(x=>x.id===id); if(x)x.t=v})}
+        save(); renderCustom(); applyState(); refresh();
+        return;
+      }
+      if(!db.edits)db.edits={};
+      const orig=it.t.replace(/<[^>]+>/g,"");
+      if(!v||v===orig)delete db.edits[id]; else db.edits[id]=v;
+      save();
+      const tEl=li.querySelector(".t");
+      tEl.innerHTML=db.edits[id]?esc(db.edits[id]):it.t;
+      li.dataset.text=(secText+" "+tEl.textContent+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
+      renderNote(li); refresh();
+    });
+    wrap.querySelector(".editcancel").addEventListener("click",()=>{
+      wrap.dataset.editing=""; renderNote(li);
+    });
   });
   if(custom){
     const del=li.querySelector(".customdel");
@@ -725,6 +766,19 @@ function renderCustom(){
     (((db.custom||{})[ul.dataset.custom])||[]).forEach(x=>{
       ul.appendChild(makeItem({t:esc(x.t),p:null},x.id,ul.dataset.sectext||"",true));
     });
+  });
+}
+function applyEdits(){
+  document.querySelectorAll("li.item:not(.custom)").forEach(li=>{
+    const id=li.dataset.id;
+    const parts=id.split(".");
+    const ch=DATA.find(x=>x.id===parts[0]);
+    const it=ch&&ch.sections[+parts[1]]&&ch.sections[+parts[1]].items[+parts[2]];
+    if(!it)return;
+    const tEl=li.querySelector(".t");
+    tEl.innerHTML=(db.edits&&db.edits[id])?esc(db.edits[id]):it.t;
+    const sect=li.closest("ul.items");
+    li.dataset.text=((sect?sect.dataset.sectext:"")+" "+tEl.textContent+" "+(it.p||"")).replace(/<[^>]+>/g,"").toLowerCase();
   });
 }
 function build(){
@@ -985,6 +1039,13 @@ function armButton(btn,idleText,armedText,onConfirm){
 armButton(document.getElementById("resetbtn"),"重設勾選","確定清除此對象的勾選？",()=>{
   cur().state={}; cur().updated=null; save();
   applyState(); renderProfiles(); refresh();
+});
+armButton(document.getElementById("clearnotesbtn"),"清除備註附圖","確定清除此對象的備註與附圖？",()=>{
+  Object.values(cur().imgs||{}).flat().forEach(k=>imgDrop(k));
+  cur().notes={}; cur().imgs={};
+  cur().updated=Date.now(); save();
+  applyState(); renderProfiles(); refresh();
+  toast("已清除此對象的所有備註與附圖（勾選保留）");
 });
 armButton(document.getElementById("delprof"),"刪除","確定刪除此對象？",()=>{
   const deadId=db.current;
@@ -1450,7 +1511,7 @@ async function syncUp(){
     });
     await supaFetch("/rest/v1/app_state",{
       method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},
-      body:JSON.stringify([{id:"main",data:{custom:db.custom||{}},updated:Date.now()}])
+      body:JSON.stringify([{id:"main",data:{custom:db.custom||{},edits:db.edits||{}},updated:Date.now()}])
     });
     lastSync=Date.now(); syncErr=null;
   }catch(e){
@@ -1479,6 +1540,9 @@ async function syncDown(){
       items.forEach(x=>{if(!loc.some(y=>y.id===x.id))loc.push(x)});
     });
   }
+  if(st&&st.data&&st.data.edits){
+    db.edits=Object.assign({},db.edits||{},st.data.edits);
+  }
   Object.entries(db.profiles).forEach(([id,p])=>{
     const empty=!p.updated&&!Object.keys(p.state||{}).length&&!Object.keys(p.notes||{}).length&&!Object.keys(p.imgs||{}).length;
     if(empty&&p.name==="預設對象"&&Object.keys(db.profiles).length>1){
@@ -1489,7 +1553,7 @@ async function syncDown(){
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
   save();
-  renderCustom(); renderProfiles(); applyState(); refresh();
+  renderCustom(); applyEdits(); renderProfiles(); applyState(); refresh();
   for(const p of Object.values(db.profiles)){
     for(const k of Object.values(p.imgs||{}).flat()){
       if(imgGet(k)){uploadedImgs.add(k);continue}
@@ -1658,7 +1722,7 @@ function doRestore(text){
   if(!db.profiles[db.current])db.current=Object.keys(db.profiles)[0];
   if(!db.custom)db.custom={};
   Object.values(db.profiles).forEach(p=>{migrateProfile(p);if(!p.notes)p.notes={};if(!p.imgs)p.imgs={}});
-  save(); renderCustom(); renderProfiles(); applyState(); refresh();
+  save(); renderCustom(); applyEdits(); renderProfiles(); applyState(); refresh();
   restoreForm.hidden=true;
   toast("備份已還原（每個對象取較新的版本合併）。記得按「☁️ 儲存雲端」讓還原後的資料上雲");
 }
