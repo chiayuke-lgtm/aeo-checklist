@@ -1,9 +1,10 @@
 name: keep-supabase-alive
-# Supabase 免費專案閒置約 7 天會暫停；每週 ping 兩次保持活躍。
+# Supabase 免費專案「一週內資料庫活動量過低」會被暫停；
+# 官方文件建議每天有幾次資料庫請求，故每天 ping 一次、每次打四張表。
 # 需要在 repo Settings → Secrets 設定 SUPA_URL 與 SUPA_ANON。
 on:
   schedule:
-    - cron: "0 21 * * 1,4"   # 週一、週四 UTC 21:00（台北時間週二、週五 05:00）
+    - cron: "0 21 * * *"   # 每天 UTC 21:00（台北時間清晨 05:00）
   workflow_dispatch:
 jobs:
   ping:
@@ -12,9 +13,11 @@ jobs:
       - name: ping supabase rest api
         run: |
           if [ -z "$SUPA_URL" ]; then echo "SUPA_URL secret not set; skip"; exit 0; fi
-          curl -sf "$SUPA_URL/rest/v1/app_state?select=id&limit=1" \
-            -H "apikey: $SUPA_ANON" -H "Authorization: Bearer $SUPA_ANON" > /dev/null \
-            && echo "pinged ok"
+          for t in app_state profiles_data fv_app_state fv_profiles_data; do
+            curl -sf "$SUPA_URL/rest/v1/$t?select=id&limit=1" \
+              -H "apikey: $SUPA_ANON" -H "Authorization: Bearer $SUPA_ANON" > /dev/null \
+              && echo "pinged $t ok"
+          done
         env:
           SUPA_URL: ${{ secrets.SUPA_URL }}
           SUPA_ANON: ${{ secrets.SUPA_ANON }}
